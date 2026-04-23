@@ -8,6 +8,7 @@ const reelsView = document.getElementById("reels");
 const spinButton = document.getElementById("spinButton");
 const balanceView = document.getElementById("balance");
 const gameOverView = document.getElementById("gameOver");
+const resetButton = document.getElementById("resetButton");
 
 const rng = new RNG();
 
@@ -18,6 +19,8 @@ const reel3 = new Reel(rng);
 const paylineEvaluator = new PaylineEvaluator();
 const balanceManager = new BalanceManager();
 const payoutCalculator = new PayoutCalculator();
+
+let isSpinning = false;
 
 function updateBalance() {
 
@@ -48,17 +51,55 @@ function updateBalance() {
 
 updateBalance();
 
-spinButton?.addEventListener("click", () => {
+function resetGame() {
 
-  if (!balanceManager.canPlaceBet()) {
+    balanceManager.reset();
 
-    console.log("Spin blocked");
+    if (reelsView) {
 
-    return;
+        reelsView.textContent =
+            "🎰 🎰 🎰";
+
+    }
+
+    if (spinButton) {
+
+        spinButton.removeAttribute("disabled");
+
+    }
+
+    if (gameOverView) {
+
+        gameOverView.textContent = "";
+
+    }
+
+    updateBalance();
 
 }
 
-    console.log("Spin started");
+resetButton?.addEventListener(
+    "click",
+    resetGame
+);
+
+spinButton?.addEventListener("click", () => {
+
+  if (isSpinning) {
+    
+    return;
+
+  }
+
+  if (!balanceManager.canPlaceBet()) {
+
+    return;
+
+  }
+
+   isSpinning = true;
+
+   spinButton?.setAttribute("disabled", "true");
 
     balanceManager.placeBet();
 
@@ -91,4 +132,8 @@ spinButton?.addEventListener("click", () => {
     updateBalance();
 
     }
+
+   isSpinning = false;
+
+   spinButton?.removeAttribute("disabled");
 });

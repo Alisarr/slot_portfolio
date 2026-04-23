@@ -14,9 +14,6 @@ export class BalanceManager {
 
         this.balance -= this.bet;
 
-        console.log("Bet placed:", this.bet);
-        console.log("Balance:", this.balance);
-
     }
 
     addWin(): void {
@@ -24,9 +21,6 @@ export class BalanceManager {
         const winAmount = this.bet * 2;
 
         this.balance += winAmount;
-
-        console.log("Win amount:", winAmount);
-        console.log("Balance:", this.balance);
 
     }
 
@@ -54,8 +48,13 @@ export class BalanceManager {
 
     this.balance += amount;
 
-    console.log("Win amount:", amount);
-    console.log("Balance:", this.balance);
+    }
+
+    reset(): void {
+
+    this.balance = 100;
+
+    console.log("Game reset");
 
     }
 
