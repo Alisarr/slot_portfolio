@@ -1,12 +1,11 @@
 import { RNG } from "../engine/RNG";
 import { Reel } from "../engine/Reel";
 import { PaylineEvaluator } from "../engine/PaylineEvaluator";
-
-console.log("Game started");
+import { BalanceManager } from "../engine/BalanceManager";
 
 const reelsView = document.getElementById("reels");
 const spinButton = document.getElementById("spinButton");
-const paylineEvaluator = new PaylineEvaluator();
+const balanceView = document.getElementById("balance");
 
 const rng = new RNG();
 
@@ -14,19 +13,41 @@ const reel1 = new Reel(rng);
 const reel2 = new Reel(rng);
 const reel3 = new Reel(rng);
 
+const paylineEvaluator = new PaylineEvaluator();
+const balanceManager = new BalanceManager();
+
+function updateBalance() {
+
+  if (balanceView) {
+
+   balanceView.textContent =
+   "Balance: " + balanceManager.getBalance();
+
+  }
+
+}
+
+updateBalance();
+
 spinButton?.addEventListener("click", () => {
 
+  if (!balanceManager.canPlaceBet()) {
+
+    console.log("Spin blocked");
+
+    return;
+
+}
+
     console.log("Spin started");
+
+    balanceManager.placeBet();
+
+    updateBalance();
 
     const symbol1 = reel1.spin();
     const symbol2 = reel2.spin();
     const symbol3 = reel3.spin();
-
-    paylineEvaluator.checkWin(
-    symbol1,
-    symbol2,
-    symbol3
-   );
 
     if (reelsView) {
 
@@ -35,4 +56,17 @@ spinButton?.addEventListener("click", () => {
 
     }
 
+    const isWin = paylineEvaluator.checkWin(
+        symbol1,
+        symbol2,
+        symbol3
+    );
+
+    if (isWin) {
+
+        balanceManager.addWin();
+
+        updateBalance();
+
+    }
 });
