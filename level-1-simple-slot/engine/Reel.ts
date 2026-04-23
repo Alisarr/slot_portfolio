@@ -12,7 +12,7 @@ export class Reel {
 
         const symbol = this.rng.getRandomSymbol();
 
-        console.log("Reel result:", symbol);
+        console.log("Reel stopped on:", symbol);
 
         return symbol;
 
