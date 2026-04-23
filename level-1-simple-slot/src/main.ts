@@ -6,6 +6,7 @@ import { BalanceManager } from "../engine/BalanceManager";
 const reelsView = document.getElementById("reels");
 const spinButton = document.getElementById("spinButton");
 const balanceView = document.getElementById("balance");
+const gameOverView = document.getElementById("gameOver");
 
 const rng = new RNG();
 
@@ -18,12 +19,28 @@ const balanceManager = new BalanceManager();
 
 function updateBalance() {
 
-  if (balanceView) {
+    if (balanceView) {
 
-   balanceView.textContent =
-   "Balance: " + balanceManager.getBalance();
+        balanceView.textContent =
+            "Balance: " + balanceManager.getBalance();
 
-  }
+    }
+
+    if (balanceManager.getBalance() <= 0) {
+
+        if (spinButton) {
+
+            spinButton.setAttribute("disabled", "true");
+
+        }
+
+        if (gameOverView) {
+
+            gameOverView.textContent = "Game Over";
+
+        }
+
+    }
 
 }
 
