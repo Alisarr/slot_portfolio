@@ -2,6 +2,7 @@ import { RNG } from "../engine/RNG";
 import { Reel } from "../engine/Reel";
 import { PaylineEvaluator } from "../engine/PaylineEvaluator";
 import { BalanceManager } from "../engine/BalanceManager";
+import { PayoutCalculator } from "../engine/PayoutCalculator";
 
 const reelsView = document.getElementById("reels");
 const spinButton = document.getElementById("spinButton");
@@ -16,6 +17,7 @@ const reel3 = new Reel(rng);
 
 const paylineEvaluator = new PaylineEvaluator();
 const balanceManager = new BalanceManager();
+const payoutCalculator = new PayoutCalculator();
 
 function updateBalance() {
 
@@ -81,9 +83,12 @@ spinButton?.addEventListener("click", () => {
 
     if (isWin) {
 
-        balanceManager.addWin();
+    const payout =
+        payoutCalculator.calculate(symbol1);
 
-        updateBalance();
+    balanceManager.addWinAmount(payout);
+
+    updateBalance();
 
     }
 });

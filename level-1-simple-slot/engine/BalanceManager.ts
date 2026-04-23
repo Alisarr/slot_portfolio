@@ -50,4 +50,13 @@ export class BalanceManager {
 
     }
 
+    addWinAmount(amount: number): void {
+
+    this.balance += amount;
+
+    console.log("Win amount:", amount);
+    console.log("Balance:", this.balance);
+
+    }
+
 }
