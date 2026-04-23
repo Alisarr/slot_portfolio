@@ -24,26 +24,20 @@ let isSpinning = false;
 
 function updateBalance() {
 
+    const balance = balanceManager.getBalance();
+
     if (balanceView) {
 
         balanceView.textContent =
-            "Balance: " + balanceManager.getBalance();
+         `Balance: ${balance}`
 
     }
 
-    if (balanceManager.getBalance() <= 0) {
+    if (balance <= 0) {
 
-        if (spinButton) {
+        spinButton?.setAttribute("disabled", "true");
 
-            spinButton.setAttribute("disabled", "true");
-
-        }
-
-        if (gameOverView) {
-
-            gameOverView.textContent = "Game Over";
-
-        }
+        gameOverView!.textContent = "Game Over";
 
     }
 
@@ -53,26 +47,15 @@ updateBalance();
 
 function resetGame() {
 
+    isSpinning = false;
+
     balanceManager.reset();
 
-    if (reelsView) {
+    reelsView!.textContent = "🎰 🎰 🎰";
 
-        reelsView.textContent =
-            "🎰 🎰 🎰";
+    spinButton?.removeAttribute("disabled");
 
-    }
-
-    if (spinButton) {
-
-        spinButton.removeAttribute("disabled");
-
-    }
-
-    if (gameOverView) {
-
-        gameOverView.textContent = "";
-
-    }
+    gameOverView!.textContent = "";
 
     updateBalance();
 
@@ -86,7 +69,7 @@ resetButton?.addEventListener(
 spinButton?.addEventListener("click", () => {
 
   if (isSpinning) {
-    
+
     return;
 
   }
