@@ -3,6 +3,7 @@ import {
     GameStateManager
 } from "../engine/GameState";
 
+
 console.log("Level 2 started");
 
 import { SpinController }
@@ -16,6 +17,19 @@ const spinController =
   gameStateManager
   );
 
+const spinButton =
+  document.getElementById(
+  "spinButton"
+  );
+
+  spinButton?.addEventListener(
+    "click",
+    () => {
+
+        spinController.spin();
+
+    }
+ );
   spinController.spin();
 
 console.log(
