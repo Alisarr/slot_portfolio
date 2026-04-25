@@ -18,9 +18,7 @@ export class SpinController {
 
     }
 
-    spin(): void {
-
-        // 1 — проверяем состояние
+     async spin(): Promise<void> {
 
         if (
             this.gameStateManager.getState()
@@ -28,13 +26,12 @@ export class SpinController {
         ) {
 
             console.log(
-                "Spin blocked: already spinning"
+                "Spin blocked"
             );
 
             return;
 
         }
-
         // 2 — начинаем spin
 
         this.gameStateManager.setState(
