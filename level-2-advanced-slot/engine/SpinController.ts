@@ -14,6 +14,13 @@ import {
     WinMessageRenderer
  } from "./WinMessageRenderer";
 
+ import { SymbolGenerator }
+    from "./SymbolGenerator";
+
+  import {
+    PaylineEvaluator
+ } from "./PaylineEvaluator";
+
 export class SpinController {
 
      private reelAnimator: ReelAnimator;
@@ -26,6 +33,12 @@ export class SpinController {
 
      private winMessageRenderer:
         WinMessageRenderer;
+
+     private symbolGenerator:
+        SymbolGenerator;
+
+     private paylineEvaluator:
+        PaylineEvaluator;
 
     private delay(
       ms: number
@@ -57,6 +70,12 @@ export class SpinController {
 
         this.winMessageRenderer =
             new WinMessageRenderer();
+
+        this.symbolGenerator =
+            new SymbolGenerator();
+
+        this.paylineEvaluator =
+            new PaylineEvaluator();
 
     }
 
@@ -100,34 +119,40 @@ export class SpinController {
 
         console.log("Spin result ready");
 
-        this.reelsRenderer.render([
-        "🍋",
-        "🍒",
-        "🍊"
-        ]);
+    const symbols = [
+      this.symbolGenerator.getRandomSymbol(),
+      this.symbolGenerator.getRandomSymbol(),
+      this.symbolGenerator.getRandomSymbol()
+      ];
 
-        const isWin =
-     Math.random() > 0.5;
+      // показываем символы
 
-     if (isWin) {
+     this.reelsRenderer.render(
+     symbols
+     );
+ 
+  // проверяем выигрыш
 
-      this.winMessageRenderer.showWin();
-     }
+    const isWin =
+     this.paylineEvaluator
+        .isWinning(symbols);
 
+    // показываем сообщение
+
+    if (isWin) {
+
+     this.winMessageRenderer
+        .showWin();
+
+    }
      else {
-      this.winMessageRenderer.clear();
-     }
-
-         
-
-        // 4 — возвращаемся в IDLE
-
-        this.gameStateManager.setState(
-            GameState.IDLE
-        );
-
+     this.winMessageRenderer
+        .clear();
 
     }
 
-
+    this.gameStateManager.setState(
+        GameState.IDLE
+    );
+  }
 }
