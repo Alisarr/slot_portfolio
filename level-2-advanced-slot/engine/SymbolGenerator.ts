@@ -1,9 +1,8 @@
-import {SYMBOLS} from "../config/symbols.ts";
+import { SYMBOLS } from "../src/config/symbols";
 
 export class SymbolGenerator {
 
-    getRandomSymbol():
-        string {
+    getRandomSymbol() {
 
         const totalWeight =
             SYMBOLS.reduce(
@@ -16,22 +15,19 @@ export class SymbolGenerator {
             Math.random()
             * totalWeight;
 
-        for (
-            const symbol
-            of SYMBOLS
-        ) {
+        for (const symbol of SYMBOLS) {
 
             random -= symbol.weight;
 
             if (random <= 0) {
 
-                return symbol.id;
+                return symbol;
 
             }
 
         }
 
-        return SYMBOLS[0].id;
+        return SYMBOLS[0];
 
     }
 

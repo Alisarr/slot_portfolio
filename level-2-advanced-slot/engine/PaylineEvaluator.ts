@@ -1,21 +1,24 @@
+import type { SymbolConfig }
+    from "../src/config/symbols";
+
 export class PaylineEvaluator {
 
     isWinning(
-        symbols: string[]
+        symbols: SymbolConfig[]
     ): boolean {
 
-        if (
-            symbols.length !== 3
-        ) {
+        if (symbols.length !== 3) {
 
             return false;
 
         }
 
         return (
-            symbols[0] === symbols[1]
+
+            symbols[0].id === symbols[1].id
             &&
-            symbols[1] === symbols[2]
+            symbols[1].id === symbols[2].id
+
         );
 
     }

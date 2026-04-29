@@ -103,11 +103,15 @@ export class SpinController {
 
         this.winMessageRenderer.clear();
 
-        this.reelsRenderer.render([
-        "🎰",
-        "🎰",
-        "🎰"
-        ]);
+        const spinningSymbols = [
+       this.symbolGenerator.getRandomSymbol(),
+       this.symbolGenerator.getRandomSymbol(),
+       this.symbolGenerator.getRandomSymbol()
+       ];
+
+     this.reelsRenderer.render(
+      spinningSymbols
+     );
 
      await this.delay(2000);
 

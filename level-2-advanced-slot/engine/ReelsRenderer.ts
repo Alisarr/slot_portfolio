@@ -1,3 +1,7 @@
+import type { SymbolConfig }
+    from "../src/config/symbols";
+
+    
 export class ReelsRenderer {
 
     private reelsElement:
@@ -24,11 +28,19 @@ export class ReelsRenderer {
     }
 
     render(
-        symbols: string[]
+    symbols: SymbolConfig[]
     ): void {
 
-        this.reelsElement.textContent =
-            symbols.join(" ");
+    this.reelsElement.innerHTML =
+      symbols
+       .map(
+        symbol =>
+        `<img 
+        src="${symbol.image}" 
+        width="80"
+        />`
+        )
+     .join("");
 
     }
 
