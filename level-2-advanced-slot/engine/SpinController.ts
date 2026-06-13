@@ -23,6 +23,24 @@ import {
 
 export class SpinController {
 
+    private startAnimation() {
+
+    return setInterval(() => {
+
+        const spinningSymbols = [
+            this.symbolGenerator.getRandomSymbol(),
+            this.symbolGenerator.getRandomSymbol(),
+            this.symbolGenerator.getRandomSymbol()
+        ];
+
+        this.reelsRenderer.render(
+            spinningSymbols
+        );
+
+    }, 100);
+
+}
+
      private reelAnimator: ReelAnimator;
 
      private gameStateManager:
@@ -81,82 +99,63 @@ export class SpinController {
 
      async spin(): Promise<void> {
 
-        if (
-            this.gameStateManager.getState()
-            === GameState.SPINNING
-        ) {
+    if (
+        this.gameStateManager.getState()
+        === GameState.SPINNING
+    ) {
 
-            console.log(
-                "Spin blocked"
-            );
+        console.log("Spin blocked");
 
-            return;
+        return;
 
-        }
-        // 2 — начинаем spin
+    }
 
-        this.gameStateManager.setState(
-            GameState.SPINNING
-        );
+    this.gameStateManager.setState(
+        GameState.SPINNING
+    );
 
-        console.log("Spin started");
+    console.log("Spin started");
 
-        this.winMessageRenderer.clear();
+    this.winMessageRenderer.clear();
 
-        const spinningSymbols = [
-       this.symbolGenerator.getRandomSymbol(),
-       this.symbolGenerator.getRandomSymbol(),
-       this.symbolGenerator.getRandomSymbol()
-       ];
+    const animation =
+        this.startAnimation();
 
-     this.reelsRenderer.render(
-      spinningSymbols
-     );
+    await this.delay(2000);
 
-     await this.delay(2000);
+    clearInterval(animation);
 
-        // 3 — симулируем результат
+    this.gameStateManager.setState(
+        GameState.RESULT
+    );
 
-        this.gameStateManager.setState(
-            GameState.RESULT
-        );
+    const finalSymbols = [
+        this.symbolGenerator.getRandomSymbol(),
+        this.symbolGenerator.getRandomSymbol(),
+        this.symbolGenerator.getRandomSymbol()
+    ];
 
-        console.log("Spin result ready");
-
-    const symbols = [
-      this.symbolGenerator.getRandomSymbol(),
-      this.symbolGenerator.getRandomSymbol(),
-      this.symbolGenerator.getRandomSymbol()
-      ];
-
-      // показываем символы
-
-     this.reelsRenderer.render(
-     symbols
-     );
- 
-  // проверяем выигрыш
+    this.reelsRenderer.render(
+        finalSymbols
+    );
 
     const isWin =
-     this.paylineEvaluator
-        .isWinning(symbols);
-
-    // показываем сообщение
+        this.paylineEvaluator
+            .isWinning(finalSymbols);
 
     if (isWin) {
 
-     this.winMessageRenderer
-        .showWin();
+        this.winMessageRenderer.showWin();
 
-    }
-     else {
-     this.winMessageRenderer
-        .clear();
+    } else {
+
+        this.winMessageRenderer.clear();
 
     }
 
     this.gameStateManager.setState(
         GameState.IDLE
     );
-  }
+
+}
 }
