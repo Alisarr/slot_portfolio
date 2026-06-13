@@ -1,7 +1,10 @@
+import "./style.css";
+
 import {
     GameState,
     GameStateManager
 } from "../engine/GameState";
+
 
 
 console.log("Level 2 started");
