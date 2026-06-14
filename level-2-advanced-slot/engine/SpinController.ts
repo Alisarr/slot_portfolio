@@ -23,6 +23,9 @@ import {
 
 export class SpinController {
 
+    private spinButton:
+    HTMLButtonElement;
+
     private startAnimation() {
 
     return setInterval(() => {
@@ -95,6 +98,22 @@ export class SpinController {
         this.paylineEvaluator =
             new PaylineEvaluator();
 
+        const button =
+         document.getElementById(
+         "spinButton"
+          );
+
+        if (!button) {
+
+        throw new Error(
+         "Spin button not found"
+         );
+
+      }
+
+     this.spinButton =
+     button as HTMLButtonElement;    
+
     }
 
      async spin(): Promise<void> {
@@ -113,6 +132,9 @@ export class SpinController {
     this.gameStateManager.setState(
         GameState.SPINNING
     );
+
+    this.spinButton.disabled =
+    true;
 
     console.log("Spin started");
 
@@ -156,6 +178,9 @@ export class SpinController {
     this.gameStateManager.setState(
         GameState.IDLE
     );
+
+    this.spinButton.disabled =
+    false;
 
 }
 }
