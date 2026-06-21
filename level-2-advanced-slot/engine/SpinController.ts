@@ -21,6 +21,13 @@ import {
     PaylineEvaluator
  } from "./PaylineEvaluator";
 
+ import { BalanceManager }
+    from "./BalanceManager";
+    
+ import {
+    BalanceRenderer
+ } from "./BalanceRenderer"
+    
 export class SpinController {
 
     private spinButton:
@@ -61,6 +68,15 @@ export class SpinController {
      private paylineEvaluator:
         PaylineEvaluator;
 
+     private balanceManager:
+       BalanceManager;
+
+     private balanceRenderer:
+        BalanceRenderer;
+
+        private readonly betAmount =
+      10;
+
     private delay(
       ms: number
      ): Promise<void> {
@@ -98,6 +114,16 @@ export class SpinController {
         this.paylineEvaluator =
             new PaylineEvaluator();
 
+            this.balanceManager =
+         new BalanceManager();
+
+          this.balanceRenderer = 
+         new BalanceRenderer();
+
+         this.balanceRenderer.updateBalance(
+         this.balanceManager.getBalance()
+         );
+
         const button =
          document.getElementById(
          "spinButton"
@@ -116,14 +142,31 @@ export class SpinController {
 
     }
 
-     async spin(): Promise<void> {
+    async spin(): Promise<void> {
 
     if (
         this.gameStateManager.getState()
         === GameState.SPINNING
     ) {
 
-        console.log("Spin blocked");
+        console.log(
+            "Spin blocked"
+        );
+
+        return;
+
+    }
+
+    if (
+        !this.balanceManager
+            .canPlaceBet(
+                this.betAmount
+            )
+    ) {
+
+        console.log(
+            "Not enough balance"
+        );
 
         return;
 
@@ -133,10 +176,20 @@ export class SpinController {
         GameState.SPINNING
     );
 
-    this.spinButton.disabled =
-    true;
+    this.balanceManager.placeBet(
+        this.betAmount
+    );
 
-    console.log("Spin started");
+    this.balanceRenderer.updateBalance(
+        this.balanceManager.getBalance()
+    );
+
+    this.spinButton.disabled =
+        true;
+
+    console.log(
+        "Spin started"
+    );
 
     this.winMessageRenderer.clear();
 
@@ -145,7 +198,9 @@ export class SpinController {
 
     await this.delay(2000);
 
-    clearInterval(animation);
+    clearInterval(
+        animation
+    );
 
     this.gameStateManager.setState(
         GameState.RESULT
@@ -163,9 +218,22 @@ export class SpinController {
 
     const isWin =
         this.paylineEvaluator
-            .isWinning(finalSymbols);
+            .isWinning(
+                finalSymbols
+            );
 
     if (isWin) {
+
+        const winAmount =
+            this.betAmount * 5;
+
+        this.balanceManager.addWin(
+            winAmount
+        );
+
+        this.balanceRenderer.updateBalance(
+            this.balanceManager.getBalance()
+        );
 
         this.winMessageRenderer.showWin();
 
@@ -180,7 +248,7 @@ export class SpinController {
     );
 
     this.spinButton.disabled =
-    false;
+        false;
 
 }
 }

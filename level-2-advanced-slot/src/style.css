@@ -150,7 +150,13 @@ body {
 
     color: white;
 
-    background: gold;
+   background:
+
+   linear-gradient(
+    to bottom,
+    #ffd700,
+    #d4a017
+   );
 
     border: none;
 
@@ -173,7 +179,7 @@ body {
     transform: scale(1.05);
 
     box-shadow:
-        0 0 25px gold;
+        0 0 30px gold;
 
 }
 
@@ -190,5 +196,36 @@ body {
     cursor: not-allowed;
 
     box-shadow: none;
+
+}
+
+.info-panel {
+
+    display: flex;
+
+    justify-content: center;
+
+    margin-bottom: 15px;
+
+}
+
+#balance {
+
+    padding: 10px 20px;
+
+    border: 2px solid gold;
+
+    border-radius: 12px;
+
+    background: #2a2a2a;
+
+    color: gold;
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 0 10px gold;
 
 }
