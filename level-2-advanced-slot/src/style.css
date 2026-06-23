@@ -50,6 +50,22 @@
   }
 }
 
+/* =======================
+   GLOBAL
+======================= */
+
+:root {
+
+    --gold: #ffd700;
+
+    --gold-dark: #d4a017;
+
+    --panel-bg: #2a2a2a;
+
+    --symbol-bg: #3a3a3a;
+
+}
+
 body {
 
     margin: 0;
@@ -74,17 +90,24 @@ body {
 
 }
 
+/* =======================
+   SLOT MACHINE
+======================= */
+
 .slot-container {
-
-    border: 4px solid gold;
-
-    border-radius: 16px;
 
     padding: 20px;
 
-    background: #2a2a2a;
-
     margin-bottom: 20px;
+
+    border: 4px solid var(--gold);
+
+    border-radius: 16px;
+
+    background: var(--panel-bg);
+
+    box-shadow:
+        0 0 20px var(--gold);
 
 }
 
@@ -104,59 +127,33 @@ body {
 
     padding: 10px;
 
-    background: #3a3a3a;
+    background: var(--symbol-bg);
 
-    border: 2px solid gold;
+    border: 2px solid var(--gold);
 
     border-radius: 10px;
 
 }
 
-#spinButton {
-
-    padding: 12px 32px;
-
-    font-size: 20px;
-
-    cursor: pointer;
-
-}
-
 #winMessage {
+
+    margin-bottom: 16px;
+
+    color: var(--gold);
 
     font-size: 28px;
 
     font-weight: bold;
 
-    color: gold;
-
-    margin-bottom: 16px;
-
 }
 
-.slot-container {
-
-    box-shadow:
-        0 0 20px gold;
-}
+/* =======================
+   SPIN BUTTON
+======================= */
 
 .spin-button {
 
     padding: 14px 40px;
-
-    font-size: 22px;
-
-    font-weight: bold;
-
-    color: white;
-
-   background:
-
-   linear-gradient(
-    to bottom,
-    #ffd700,
-    #d4a017
-   );
 
     border: none;
 
@@ -164,13 +161,25 @@ body {
 
     cursor: pointer;
 
+    color: white;
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    background:
+        linear-gradient(
+            to bottom,
+            var(--gold),
+            var(--gold-dark)
+        );
+
     transition:
         transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+        box-shadow 0.2s ease;
 
     box-shadow:
-        0 0 15px gold;
+        0 0 15px var(--gold);
 
 }
 
@@ -179,7 +188,7 @@ body {
     transform: scale(1.05);
 
     box-shadow:
-        0 0 30px gold;
+        0 0 30px var(--gold);
 
 }
 
@@ -199,6 +208,10 @@ body {
 
 }
 
+/* =======================
+   INFO PANEL
+======================= */
+
 .info-panel {
 
     display: flex;
@@ -213,19 +226,102 @@ body {
 
     padding: 10px 20px;
 
-    border: 2px solid gold;
+    border: 2px solid var(--gold);
 
     border-radius: 12px;
 
-    background: #2a2a2a;
+    background: var(--panel-bg);
 
-    color: gold;
+    color: var(--gold);
 
     font-size: 28px;
 
     font-weight: bold;
 
     box-shadow:
-        0 0 10px gold;
+        0 0 10px var(--gold);
+
+}
+
+/* =======================
+   BET CONTROLS
+======================= */
+
+.controls-panel {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-top: 20px;
+
+    padding: 15px 25px;
+
+    border: 2px solid var(--gold);
+
+    border-radius: 16px;
+
+    background: var(--panel-bg);
+
+    box-shadow:
+        0 0 15px var(--gold);
+
+}
+
+#bet {
+
+    min-width: 100px;
+
+    color: var(--gold);
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+}
+
+#increaseBet,
+#decreaseBet {
+
+    width: 45px;
+
+    height: 45px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    color: white;
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    background:
+        linear-gradient(
+            to bottom,
+            var(--gold),
+            var(--gold-dark)
+        );
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+#increaseBet:hover,
+#decreaseBet:hover {
+
+    transform: scale(1.08);
+
+    box-shadow:
+        0 0 15px var(--gold);
 
 }
