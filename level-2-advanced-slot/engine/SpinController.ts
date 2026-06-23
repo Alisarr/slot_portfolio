@@ -30,6 +30,12 @@ import {
 
  import { PayoutCalculator }
     from "./PayoutCalculator";
+
+    import { BetManager }
+    from "./BetManager";
+
+    import { BetRenderer }
+    from "./BetRenderer";
     
 export class SpinController {
 
@@ -77,11 +83,21 @@ export class SpinController {
      private balanceRenderer:
         BalanceRenderer;
 
+     private betRenderer:
+        BetRenderer;
+
      private payoutCalculator:
         PayoutCalculator;
 
-        private readonly betAmount =
-      10;
+     private betManager:
+        BetManager;
+
+        private increaseBetButton:
+       HTMLButtonElement;
+
+      private decreaseBetButton:
+      HTMLButtonElement;
+
 
     private delay(
       ms: number
@@ -123,12 +139,22 @@ export class SpinController {
             this.balanceManager =
          new BalanceManager();
 
+            this.betManager =
+         new BetManager();
+
           this.balanceRenderer = 
          new BalanceRenderer();
 
          this.balanceRenderer.updateBalance(
          this.balanceManager.getBalance()
          );
+
+         this.betRenderer =
+           new BetRenderer();
+
+          this.betRenderer.updateBet(
+          this.betManager.getBet()
+           );
 
         this.payoutCalculator =
           new PayoutCalculator();
@@ -143,11 +169,70 @@ export class SpinController {
         throw new Error(
          "Spin button not found"
          );
-
       }
 
-     this.spinButton =
-     button as HTMLButtonElement;    
+      this.spinButton =
+     button as HTMLButtonElement;
+
+      const increaseButton =
+       document.getElementById(
+        "increaseBet"
+       );
+
+     const decreaseButton =
+       document.getElementById(
+        "decreaseBet"
+      );
+
+      if (
+      !increaseButton ||
+      !decreaseButton
+      ) {
+
+      throw new Error(
+        "Bet buttons not found"
+      );
+    }
+
+    this.increaseBetButton =
+    increaseButton as HTMLButtonElement;
+
+    this.decreaseBetButton =
+    decreaseButton as HTMLButtonElement;
+    
+    this.increaseBetButton
+    .addEventListener(
+        "click",
+        () => {
+
+            this.betManager
+                .increaseBet();
+
+            this.betRenderer
+                .updateBet(
+                    this.betManager
+                        .getBet()
+                );
+
+        }
+    );
+
+    this.decreaseBetButton
+    .addEventListener(
+        "click",
+        () => {
+
+            this.betManager
+                .decreaseBet();
+
+            this.betRenderer
+                .updateBet(
+                    this.betManager
+                        .getBet()
+                );
+
+        }
+    );
 
     }
 
@@ -169,7 +254,7 @@ export class SpinController {
     if (
         !this.balanceManager
             .canPlaceBet(
-                this.betAmount
+                this.betManager.getBet()
             )
     ) {
 
@@ -186,7 +271,7 @@ export class SpinController {
     );
 
     this.balanceManager.placeBet(
-        this.betAmount
+       this.betManager.getBet()
     );
 
     this.balanceRenderer.updateBalance(
@@ -237,7 +322,7 @@ export class SpinController {
           this.payoutCalculator
          .calculateWin(
             finalSymbols,
-            this.betAmount
+            this.betManager.getBet()
         );
 
         this.balanceManager.addWin(
