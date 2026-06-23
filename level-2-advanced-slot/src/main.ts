@@ -28,11 +28,13 @@ const spinButton =
   spinButton?.addEventListener(
     "click",
     () => {
-
+      console.log("spin() entered");
+      
         spinController.spin();
 
     }
  );
+ console.log("Auto spin");
   spinController.spin();
 
 console.log(

@@ -27,6 +27,9 @@ import {
  import {
     BalanceRenderer
  } from "./BalanceRenderer"
+
+ import { PayoutCalculator }
+    from "./PayoutCalculator";
     
 export class SpinController {
 
@@ -73,6 +76,9 @@ export class SpinController {
 
      private balanceRenderer:
         BalanceRenderer;
+
+     private payoutCalculator:
+        PayoutCalculator;
 
         private readonly betAmount =
       10;
@@ -123,6 +129,9 @@ export class SpinController {
          this.balanceRenderer.updateBalance(
          this.balanceManager.getBalance()
          );
+
+        this.payoutCalculator =
+          new PayoutCalculator();
 
         const button =
          document.getElementById(
@@ -224,8 +233,12 @@ export class SpinController {
 
     if (isWin) {
 
-        const winAmount =
-            this.betAmount * 5;
+    const winAmount =
+          this.payoutCalculator
+         .calculateWin(
+            finalSymbols,
+            this.betAmount
+        );
 
         this.balanceManager.addWin(
             winAmount
