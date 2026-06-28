@@ -36,6 +36,10 @@ import {
 
     import { BetRenderer }
     from "./BetRenderer";
+
+    import {
+    WinPopupRenderer
+    } from "./WinPopupRenderer";
     
 export class SpinController {
 
@@ -70,6 +74,9 @@ export class SpinController {
 
      private winMessageRenderer:
         WinMessageRenderer;
+
+     private winPopupRenderer:
+        WinPopupRenderer;
 
      private symbolGenerator:
         SymbolGenerator;
@@ -129,6 +136,9 @@ export class SpinController {
 
         this.winMessageRenderer =
             new WinMessageRenderer();
+
+        this.winPopupRenderer =
+          new WinPopupRenderer();
 
         this.symbolGenerator =
             new SymbolGenerator();
@@ -331,6 +341,10 @@ export class SpinController {
 
         this.balanceRenderer.updateBalance(
             this.balanceManager.getBalance()
+        );
+
+        this.winPopupRenderer.showWin(
+        winAmount
         );
 
         this.winMessageRenderer.showWin();

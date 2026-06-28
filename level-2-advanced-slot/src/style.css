@@ -325,3 +325,142 @@ body {
         0 0 15px var(--gold);
 
 }
+
+/* =======================
+   WIN POPUP
+======================= */
+
+#winPopup {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.6);
+
+    opacity: 0;
+
+    padding: 20px 50px;
+
+    border: 3px solid var(--gold);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #3b3100,
+            #1f1f1f
+        );
+
+    color: var(--gold);
+
+    font-size: 36px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    text-align: center;
+
+    box-shadow:
+        0 0 15px #ffd700,
+        0 0 40px rgba(255,215,0,.6);
+
+    pointer-events: none;
+
+}
+
+#winPopup.show {
+
+    animation:
+        winPopup 2s ease forwards,
+        glow .8s infinite;
+
+}
+
+@keyframes winPopup {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -20%)
+            scale(.5);
+
+    }
+
+    20% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.18);
+
+    }
+
+    35% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(.95);
+
+    }
+
+    50% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
+    }
+
+    85% {
+
+        opacity: 1;
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -70%)
+            scale(.85);
+
+    }
+
+}
+
+@keyframes glow {
+
+    0% {
+
+        box-shadow:
+            0 0 10px gold;
+
+    }
+
+    50% {
+
+        box-shadow:
+            0 0 35px gold,
+            0 0 60px gold;
+
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 10px gold;
+
+    }
+
+}
