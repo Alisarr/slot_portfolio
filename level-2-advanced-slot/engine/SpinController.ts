@@ -335,17 +335,22 @@ export class SpinController {
             this.betManager.getBet()
         );
 
-        this.balanceManager.addWin(
-            winAmount
-        );
-
-        this.balanceRenderer.updateBalance(
-            this.balanceManager.getBalance()
-        );
-
         this.winPopupRenderer.showWin(
         winAmount
         );
+
+     setTimeout(() => {
+
+       this.balanceManager.addWin(
+        winAmount
+        );
+
+        this.balanceRenderer.updateBalance(
+        this.balanceManager.getBalance()
+        );
+
+      }, 300);
+
 
         this.winMessageRenderer.showWin();
 
