@@ -40,6 +40,9 @@ import {
     import {
     WinPopupRenderer
     } from "./WinPopupRenderer";
+
+    import { SoundManager }
+    from "./SoundManager";
     
 export class SpinController {
 
@@ -105,6 +108,9 @@ export class SpinController {
       private decreaseBetButton:
       HTMLButtonElement;
 
+      private soundManager:
+    SoundManager;
+
 
     private delay(
       ms: number
@@ -151,6 +157,9 @@ export class SpinController {
 
             this.betManager =
          new BetManager();
+
+            this.soundManager =
+         new SoundManager();
 
           this.balanceRenderer = 
          new BalanceRenderer();
@@ -218,6 +227,8 @@ export class SpinController {
             this.betManager
                 .increaseBet();
 
+        this.soundManager.playButton();
+
             this.betRenderer
                 .updateBet(
                     this.betManager
@@ -234,6 +245,8 @@ export class SpinController {
 
             this.betManager
                 .decreaseBet();
+
+        this.soundManager.playButton();
 
             this.betRenderer
                 .updateBet(
@@ -284,6 +297,8 @@ export class SpinController {
        this.betManager.getBet()
     );
 
+    this.soundManager.playSpin();
+
     this.balanceRenderer.updateBalance(
         this.balanceManager.getBalance()
     );
@@ -305,6 +320,8 @@ export class SpinController {
     clearInterval(
         animation
     );
+
+    this.soundManager.stopSpin();
 
     this.gameStateManager.setState(
         GameState.RESULT
@@ -335,11 +352,15 @@ export class SpinController {
             this.betManager.getBet()
         );
 
+        this.soundManager.playWin();
+
         this.winPopupRenderer.showWin(
         winAmount
         );
 
      setTimeout(() => {
+
+       this.soundManager.playCoin();
 
        this.balanceManager.addWin(
         winAmount
