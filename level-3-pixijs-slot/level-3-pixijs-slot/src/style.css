@@ -1,0 +1,25 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #f4f0ff;
+  background: #090714;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 320px;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
