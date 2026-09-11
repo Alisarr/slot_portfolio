@@ -3,8 +3,6 @@ import {
     GameStateManager
 } from "./GameState";
 
-import { ReelAnimator }
-    from "./ReelAnimator";
 
 import {
     ReelsRenderer
@@ -67,7 +65,6 @@ export class SpinController {
 
 }
 
-     private reelAnimator: ReelAnimator;
 
      private gameStateManager:
         GameStateManager;
@@ -133,9 +130,6 @@ export class SpinController {
 
         this.gameStateManager =
             gameStateManager;
-
-        this.reelAnimator =
-            new ReelAnimator();
 
         this.reelsRenderer =
             new ReelsRenderer();
@@ -274,10 +268,13 @@ export class SpinController {
 
     }
 
+    const betAtSpinStart = 
+       this.betManager.getBet();
+
     if (
         !this.balanceManager
             .canPlaceBet(
-                this.betManager.getBet()
+                betAtSpinStart
             )
     ) {
 
@@ -294,7 +291,7 @@ export class SpinController {
     );
 
     this.balanceManager.placeBet(
-       this.betManager.getBet()
+       betAtSpinStart
     );
 
     this.soundManager.playSpin();
@@ -349,7 +346,7 @@ export class SpinController {
           this.payoutCalculator
          .calculateWin(
             finalSymbols,
-            this.betManager.getBet()
+           betAtSpinStart 
         );
 
         this.soundManager.playWin();
@@ -357,7 +354,6 @@ export class SpinController {
         this.winPopupRenderer.showWin(
         winAmount
         );
-
      setTimeout(() => {
 
        this.soundManager.playCoin();

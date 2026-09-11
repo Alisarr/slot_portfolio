@@ -1,7 +1,6 @@
 import "./style.css";
 
 import {
-    GameState,
     GameStateManager
 } from "../engine/GameState";
 
