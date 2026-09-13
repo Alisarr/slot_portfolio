@@ -1,4 +1,10 @@
-import type { Board, Payline, PaylineMatch, SymbolId } from "./types";
+import type {
+  Board,
+  Payline,
+  PaylineMatch,
+  PaylineWin,
+  SymbolId,
+} from "./types";
 
 const SPECIAL_SYMBOLS: readonly SymbolId[] = ["wild", "scatter"];
 
@@ -34,4 +40,26 @@ export function evaluatePayline(
     symbol: firstSymbol,
     count: matchingCount,
   };
+}
+
+export function evaluatePaylines(
+  board: Board,
+  paylines: readonly Payline[],
+): PaylineWin[] {
+  const wins: PaylineWin[] = [];
+
+  for (let paylineIndex = 0; paylineIndex < paylines.length; paylineIndex += 1) {
+    const payline = paylines[paylineIndex];
+    const match = evaluatePayline(board, payline);
+
+    if (match !== null) {
+      wins.push({
+        paylineIndex: paylineIndex,
+        symbol: match.symbol,
+        count: match.count,
+      });
+    }
+  }
+
+  return wins;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { evaluatePayline } from "./evaluatePayline";
-import { MIDDLE_PAYLINE, V_PAYLINE} from "./paylines";
+import { evaluatePayline, evaluatePaylines } from "./evaluatePayline";
+import { MIDDLE_PAYLINE, BASE_PAYLINES, V_PAYLINE} from "./paylines";
 import type { Board } from "./types";
 
 describe("evaluatePayline", () => {
@@ -46,4 +46,27 @@ describe("evaluatePayline", () => {
       count: 3,
     });
   })
+
+  it("finds wins on multiple paylines", () => {
+    const board = [
+      ["low-1", "low-2", "high-2"],
+      ["low-1", "low-3", "high-2"],
+      ["low-1", "low-4", "high-2"],
+      ["high-1", "low-2", "high-2"],
+      ["high-3", "low-3", "high-2"],
+    ] as const satisfies Board;
+
+    expect(evaluatePaylines(board, BASE_PAYLINES)).toEqual([
+      {
+        paylineIndex: 0,
+        symbol: "low-1",
+        count: 3,
+      },
+      {
+        paylineIndex: 2,
+        symbol: "high-2",
+        count: 5,
+      }
+    ]);
+  });
 });

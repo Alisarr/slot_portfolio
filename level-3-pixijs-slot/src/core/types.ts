@@ -32,3 +32,7 @@ export interface PaylineMatch {
   readonly symbol: SymbolId;
   readonly count: number;
 }
+
+export interface PaylineWin extends PaylineMatch {
+  readonly paylineIndex: number;
+}
