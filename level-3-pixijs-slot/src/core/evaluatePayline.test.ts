@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { evaluatePayline } from "./evaluatePayline";
-import { MIDDLE_PAYLINE } from "./paylines";
+import { MIDDLE_PAYLINE, V_PAYLINE} from "./paylines";
 import type { Board } from "./types";
 
 describe("evaluatePayline", () => {
@@ -31,4 +31,19 @@ describe("evaluatePayline", () => {
 
     expect(evaluatePayline(board, MIDDLE_PAYLINE)).toBeNull();
   });
+
+  it("finds three matching symbols on the V payline", () => {
+    const board = [
+      ["high-2", "high-1", "low-3"],
+      ["low-1", "high-2", "low-4"],
+      ["high-1", "low-1", "high-2"],
+      ["low-1", "high-1", "high-3"],
+      ["low-4", "high-1", "low-1"],
+    ] as const satisfies Board;
+
+    expect(evaluatePayline(board, V_PAYLINE)).toEqual({
+      symbol: "high-2",
+      count: 3,
+    });
+  })
 });
