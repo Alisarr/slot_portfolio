@@ -69,4 +69,19 @@ describe("evaluatePayline", () => {
       }
     ]);
   });
+
+  it("matches five wilds", () => {
+    const board = [
+      ["wild", "low-1", "low-2"],
+      ["wild", "low-1", "low-2"],
+      ["wild", "low-1", "low-2"],
+      ["wild", "low-1", "low-2"],
+      ["wild", "low-1", "low-2"],
+    ] as const satisfies Board;
+
+    expect(evaluatePayline(board, [0, 0, 0, 0, 0])).toEqual({
+      symbol: "wild",
+      count: 5,
+    });
+  });
 });

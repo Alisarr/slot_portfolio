@@ -3,19 +3,16 @@ import type {
   Payline,
   PaylineMatch,
   PaylineWin,
-  SymbolId,
 } from "./types";
-
-const SPECIAL_SYMBOLS: readonly SymbolId[] = ["wild", "scatter"];
 
 export function evaluatePayline(
   board: Board,
   payline: Payline,
 ): PaylineMatch | null {
-  const firstSymbol = board[0][payline[0]];
+  let matchSymbol = board[0][payline[0]];
 
   // Wild and Scatter rules will be introduced as their own tested milestone.
-  if (SPECIAL_SYMBOLS.includes(firstSymbol)) {
+  if (matchSymbol === "scatter") {
     return null;
   }
 
@@ -25,7 +22,15 @@ export function evaluatePayline(
     const rowIndex = payline[reelIndex];
     const symbol = board[reelIndex][rowIndex];
 
-    if (symbol !== firstSymbol) {
+    if (symbol === "scatter") {
+      break;
+    }
+
+    if (matchSymbol === "wild") {
+      matchSymbol = symbol;
+    }
+
+    if (symbol !== matchSymbol && symbol !== "wild") {
       break;
     }
 
@@ -37,7 +42,7 @@ export function evaluatePayline(
   }
 
   return {
-    symbol: firstSymbol,
+    symbol: matchSymbol,
     count: matchingCount,
   };
 }

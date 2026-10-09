@@ -7,6 +7,7 @@ import {
   isBonusActive,
 } from "./bonus/BonusState";
 
+import{generateBoard}from "./core/generateBoard";
 import "./style.css";
 import type { Board } from "./core/types";
 import { PixiSlotView } from "./view/PixiSlotView";
@@ -71,8 +72,10 @@ function updateBonusDisplay(): void {
 
 spinButton.addEventListener("click", () => {
   if (isBonusActive(bonusState)) {
-    bonusState = resolveFreeSpin(bonusState, DEMO_BOARD, 0);
-    slotView.renderBoard(DEMO_BOARD);
+    const nextBoard = generateBoard();
+    
+    bonusState = resolveFreeSpin(bonusState, nextBoard,0);
+    slotView.renderBoard(nextBoard);
   } else {
     bonusState = awardScatters(createBonusState(), BONUS_TRIGGER_BOARD);
     slotView.renderBoard(BONUS_TRIGGER_BOARD);
