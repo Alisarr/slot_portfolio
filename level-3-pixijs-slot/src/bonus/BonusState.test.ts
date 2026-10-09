@@ -67,4 +67,17 @@ it("rejects a free spin when none remain", () => {
   expect(() => resolveFreeSpin(state, boardWithoutScatters, 2))
     .toThrow("No free spins remaining");
 });
+it ("consumes a spin and adds its win without a retrigger", () => {
+  const before = {
+    ...createBonusState(),
+    remainingSpins: 3,
+    totalWin: 12,
+  };
+  const after = resolveFreeSpin(before, boardWithoutScatters, 5);
+
+  expect(after.remainingSpins).toBe(2);
+  expect(after.totalWin).toBe(17);
+  expect(before.remainingSpins).toBe(3);
+  expect(before.totalWin).toBe(12);
+});
   });

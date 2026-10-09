@@ -23,3 +23,18 @@ body,
 canvas {
   display: block;
 }
+
+.bonus-controls {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 10;
+  padding: 12px 16px;
+  background: #161226;
+  color: white;
+  border-radius: 10px;
+}
+
+.bonus-controls p {
+  margin: 0 0 8px;
+}
