@@ -36,3 +36,13 @@ export interface PaylineMatch {
 export interface PaylineWin extends PaylineMatch {
   readonly paylineIndex: number;
 }
+
+export interface PaylinePayout extends PaylineWin {
+  readonly amount: number ;
+}
+
+export interface SpinResults {
+  readonly lineWins: readonly PaylinePayout[];
+  readonly totalWin: number;
+  readonly scatterCount: number;
+}
