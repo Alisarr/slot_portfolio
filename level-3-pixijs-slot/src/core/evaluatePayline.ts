@@ -1,3 +1,5 @@
+import { getPaylineWin } from "./payouts";
+
 import type {
   Board,
   Payline,
@@ -17,6 +19,7 @@ export function evaluatePayline(
   }
 
   let matchingCount = 1;
+  let leadingWildCount = matchSymbol === "wild" ? 1 : 0;
 
   for (let reelIndex = 1; reelIndex < board.length; reelIndex += 1) {
     const rowIndex = payline[reelIndex];
@@ -27,6 +30,9 @@ export function evaluatePayline(
     }
 
     if (matchSymbol === "wild") {
+      if (symbol === "wild") {
+        leadingWildCount += 1;
+      }
       matchSymbol = symbol;
     }
 
@@ -40,11 +46,28 @@ export function evaluatePayline(
   if (matchingCount < 3) {
     return null;
   }
-
-  return {
+  const symbolMatch: PaylineMatch = {
     symbol: matchSymbol,
     count: matchingCount,
   };
+
+  if (leadingWildCount < 3) {
+    return symbolMatch;
+  }
+  
+  const wildMatch: PaylineMatch = {
+    symbol: "wild",
+    count: leadingWildCount,
+  }
+
+  const symbolPayout = getPaylineWin(symbolMatch, 1);
+  const wildPayout = getPaylineWin(wildMatch, 1);
+
+  if (wildPayout > symbolPayout) {
+    return wildMatch;
+  }
+
+  return symbolMatch;
 }
 
 export function evaluatePaylines(
