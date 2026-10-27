@@ -4,7 +4,10 @@ import {
     createBonusState,
     awardScatters,
     isBonusActive,
+    resolveFreeSpin,
 } from "../bonus/BonusState";
+
+import { evaluateSpin } from "../core/evaluateSpin";
 import { BASE_PAYLINES } from "../core/paylines";
 import { settlePaidSpin } from "./settlePaidSpin";
 
@@ -58,4 +61,36 @@ export function playPaidSpin(
     },
     spin: paidResult.spin,
  };
+}
+export function playFreeSpin (
+    session: GameSession,
+    board: Board,
+): GameSpinResults {
+    if (!isBonusActive(session.bonus)) {
+        throw new Error("No free spins remaining");
+    }
+
+    const bonusBet = session.bonusBet;
+
+    if ( bonusBet === null) {
+        throw new Error("Bonus bet is missing");
+    }
+
+    const spin = evaluateSpin(board, BASE_PAYLINES, bonusBet);
+
+    const bonus = resolveFreeSpin(
+        session.bonus,
+        board,
+        spin.totalWin,
+    );
+
+    return {
+        session: {
+            ...session,
+            balance: session.balance + spin.totalWin,
+            bonus,
+            bonusBet:isBonusActive(bonus) ? bonusBet : null,
+        },
+     spin,
+};
 }
