@@ -12,21 +12,23 @@ const losingBoard = [
 
 describe("GameEngine", () => {
   it("remembers the updated balance between spins", () => {
-    const game = new GameEngine(4);
+    const game = new GameEngine(4, () => losingBoard);
 
-    const first = game.spin(2, losingBoard);
+    const first = game.spin(2);
+
+    expect(first.board).toEqual(losingBoard);
     expect(first.session.balance).toBe(2);
 
-    const second = game.spin(2, losingBoard);
-    expect(second.session.balance).toBe(0);
+    const second = game.spin(2);
 
+    expect(second.session.balance).toBe(0);
     expect(game.getSession().balance).toBe(0);
   });
 
   it("keeps the balance unchanged when a spin is rejected", () => {
-    const game = new GameEngine(1);
+    const game = new GameEngine(1, () => losingBoard);
 
-    expect(() => game.spin(2, losingBoard))
+    expect(() => game.spin(2))
       .toThrow("Insufficient balance");
 
     expect(game.getSession().balance).toBe(1);
