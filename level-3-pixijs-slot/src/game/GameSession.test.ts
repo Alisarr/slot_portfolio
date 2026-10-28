@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Board } from "../core/types";
 import { createGameSession, playPaidSpin, playFreeSpin} from "./GameSession";
+import { playNextSpin } from "./platNestSpin";
 
 const losingBoard = [
   ["low-1", "low-1", "low-1"],
@@ -134,5 +135,45 @@ describe("playFreeSpin", () => {
     expect(() =>
       playFreeSpin(session, losingBoard),
     ).toThrow("No free spins remaining");
+  });
+});
+
+describe("playNextSpin", () => {
+  it("plays a paid spin when no bonus is active", () => {
+    const session = createGameSession(100);
+
+    const result = playNextSpin(session, 2, losingBoard);
+
+    expect(result.session.balance).toBe(98);
+    expect(result.session.bonus.remainingSpins).toBe(0);
+    expect(result.session.bonusBet).toBeNull();
+  });
+
+  it("uses the locked bonus bet even with a zero balance", () => {
+    const initial = createGameSession(2);
+
+    // Тратим 2 и запускаем бонус: баланс 0, осталось 10 вращений.
+    const started = playPaidSpin(initial, 2, triggerBoard);
+
+    // Передаём другую ставку, но бонус должен использовать сохранённые 2.
+    const result = playNextSpin(
+      started.session,
+      1000,
+      winningBoard,
+    );
+
+    expect(result.spin.totalWin).toBeCloseTo(2.8);
+    expect(result.session.balance).toBeCloseTo(2.8);
+    expect(result.session.bonus.remainingSpins).toBe(9);
+    expect(result.session.bonusBet).toBe(2);
+
+    const spinresult = playNextSpin(
+      result.session,
+      2,
+      losingBoard
+    );
+
+    expect(spinresult.session.bonus.remainingSpins).toBe(8);
+    expect(spinresult.session.balance).toBeCloseTo(2.8);
   });
 });

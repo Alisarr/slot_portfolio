@@ -1,5 +1,5 @@
 import type {Board, Payline} from "./types";
-import { evaluateSpin } from "./evaluteSpin";
+import { evaluateSpin } from "./evaluateSpin";
 
 export function getSpinWin( 
     board: Board,

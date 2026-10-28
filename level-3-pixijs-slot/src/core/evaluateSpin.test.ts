@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Board } from "./types";
 import { BASE_PAYLINES } from "./paylines";
-import { evaluateSpin } from "./evaluteSpin";
+import { evaluateSpin } from "./evaluateSpin";
 
 const board = [
     ["high-1", "low-1", "scatter"],
