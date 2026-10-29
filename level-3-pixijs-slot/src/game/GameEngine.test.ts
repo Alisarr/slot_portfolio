@@ -25,12 +25,18 @@ describe("GameEngine", () => {
     expect(game.getSession().balance).toBe(0);
   });
 
-  it("keeps the balance unchanged when a spin is rejected", () => {
-    const game = new GameEngine(1, () => losingBoard);
+ it("rejects an unaffordable spin before generating a board", () => {
+  let generatedBoards = 0;
 
-    expect(() => game.spin(2))
-      .toThrow("Insufficient balance");
-
-    expect(game.getSession().balance).toBe(1);
+  const game = new GameEngine(1, () => {
+    generatedBoards += 1;
+    return losingBoard;
   });
+
+  expect(() => game.spin(2))
+    .toThrow("Insufficient balance");
+
+  expect(generatedBoards).toBe(0);
+  expect(game.getSession().balance).toBe(1);
+});
 });

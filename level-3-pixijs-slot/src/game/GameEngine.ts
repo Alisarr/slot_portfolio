@@ -3,6 +3,9 @@ import { generateBoard } from "../core/generateBoard";
 import type { GameSession, GameSpinResults } from "./GameSession";
 import { createGameSession } from "./GameSession";
 import { playNextSpin } from "./platNestSpin";
+import { isBonusActive } from "../bonus/BonusState";
+import { BASE_PAYLINES } from "../core/paylines";
+import { validatePaidSpin } from "./validatePaidSpin";
 
 type BoardGenerator = () => Board;
 
@@ -25,6 +28,13 @@ export class GameEngine {
     }
 
     spin(totalBet: number): EngineSpinResult{
+        if (!isBonusActive(this.session.bonus)) {
+            validatePaidSpin(
+                this.session.balance,
+                totalBet,
+                BASE_PAYLINES,
+            );
+        }
         const board = this.createBoard();
         
         const result = playNextSpin(
