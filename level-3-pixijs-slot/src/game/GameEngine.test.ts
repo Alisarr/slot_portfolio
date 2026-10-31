@@ -86,5 +86,27 @@ it("reports spin modes across a complete bonus", () => {
   expect(nextPaid.mode).toBe("paid");
   expect(nextPaid.session.balance).toBe(0);
   expect(nextPaid.session.bonus.remainingSpins).toBe(0);
+  expect(nextPaid.roundId).toBe(12);
+});
+
+it("numbers successful spins without counting rejected requests", () => {
+  const game = new GameEngine(4, () => losingBoard);
+
+  const first = game.spin(2);
+
+  expect(first.roundId).toBe(1);
+  expect(first.session.balance).toBe(2);
+
+  // Осталось 2, поэтому ставка 3 недопустима.
+  expect(() => game.spin(3))
+    .toThrow("Insufficient balance");
+
+  expect(game.getSession().balance).toBe(2);
+
+  // После отклонённого запроса номер всё ещё следующий — 2.
+  const second = game.spin(2);
+
+  expect(second.roundId).toBe(2);
+  expect(second.session.balance).toBe(0);
 });
 });

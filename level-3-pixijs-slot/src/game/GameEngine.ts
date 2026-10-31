@@ -16,11 +16,13 @@ export interface EngineSpinResult extends GameSpinResults{
 export interface EngineSpinResult extends GameSpinResults {
     readonly board: Board;
     readonly mode: "paid" | "free";
+    readonly roundId: number;
 }
 
 export class GameEngine { 
     private session: GameSession;
     private createBoard: BoardGenerator;
+    private completeSpins = 0;
 
     constructor(initialBalance: number,
         createBoard: BoardGenerator = generateBoard,
@@ -51,11 +53,13 @@ export class GameEngine {
         );
 
         this.session = result.session;
+        this.completeSpins += 1;
 
         return {
           ...result,
           board,
           mode: isFreeSpin ? "free" : "paid",
+          roundId: this.completeSpins,
         };
     }
 }
