@@ -13,6 +13,11 @@ export interface EngineSpinResult extends GameSpinResults{
     readonly board  : Board;
 }
 
+export interface EngineSpinResult extends GameSpinResults {
+    readonly board: Board;
+    readonly mode: "paid" | "free";
+}
+
 export class GameEngine { 
     private session: GameSession;
     private createBoard: BoardGenerator;
@@ -28,7 +33,9 @@ export class GameEngine {
     }
 
     spin(totalBet: number): EngineSpinResult{
-        if (!isBonusActive(this.session.bonus)) {
+        const isFreeSpin = isBonusActive(this.session.bonus);
+
+        if (!isFreeSpin) {
             validatePaidSpin(
                 this.session.balance,
                 totalBet,
@@ -48,6 +55,7 @@ export class GameEngine {
         return {
           ...result,
           board,
+          mode: isFreeSpin ? "free" : "paid",
         };
     }
 }
