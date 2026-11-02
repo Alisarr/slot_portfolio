@@ -16,3 +16,33 @@ export function applyStickyWilds(
 
     return nextBoard;
 }
+
+export function collectStickyWilds(
+    board: Board,
+    stickyReels: readonly StickyWildReel[],
+    createMultiplier: () => number,
+): StickyWildReel[] {
+    const nextStickyReels = [...stickyReels];
+    const reelIndexes = [0, 1, 2, 3, 4] as const;
+
+    for (const reelIndex of reelIndexes) {
+        const alredySticky = nextStickyReels.some(
+            (stickyReel) =>  stickyReel.reelIndex === reelIndex,
+        );
+
+        if (alredySticky) {
+            continue;
+        }
+
+        const hasWild = board[reelIndex].includes("wild");
+
+        if (hasWild) {
+            nextStickyReels.push({
+                reelIndex: reelIndex,
+                multiplier: createMultiplier(),
+            });
+        }
+    }
+    
+    return nextStickyReels;
+}
