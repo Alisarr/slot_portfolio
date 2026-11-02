@@ -10,6 +10,11 @@ import {
 import { evaluateSpin } from "../core/evaluateSpin";
 import { BASE_PAYLINES } from "../core/paylines";
 import { settlePaidSpin } from "./settlePaidSpin";
+import { countScatters } from "../core/countScatters";
+import {
+  applyStickyWilds,
+  collectStickyWilds,
+} from "../bonus/stickyWilds";
 
 export interface GameSession {
     readonly balance: number;
@@ -20,6 +25,8 @@ export interface GameSession {
 export interface GameSpinResults {
     readonly session: GameSession;
     readonly spin: SpinResults;
+    readonly board: Board;
+    readonly boardBeforeExpansion: Board;
 }
 
 export function createGameSession(balance: number): GameSession{
@@ -60,37 +67,74 @@ export function playPaidSpin(
         bonusBet,
     },
     spin: paidResult.spin,
+    board,
+    boardBeforeExpansion: board,
  };
 }
-export function playFreeSpin (
-    session: GameSession,
-    board: Board,
+export function playFreeSpin(
+  session: GameSession,
+  board: Board,
 ): GameSpinResults {
-    if (!isBonusActive(session.bonus)) {
-        throw new Error("No free spins remaining");
-    }
+  if (!isBonusActive(session.bonus)) {
+    throw new Error("No free spins remaining");
+  }
 
-    const bonusBet = session.bonusBet;
+  const bonusBet = session.bonusBet;
 
-    if ( bonusBet === null) {
-        throw new Error("Bonus bet is missing");
-    }
+  if (bonusBet === null) {
+    throw new Error("Bonus bet is missing");
+  }
 
-    const spin = evaluateSpin(board, BASE_PAYLINES, bonusBet);
+  // Возвращаем Wild-барабаны, сохранённые с прошлых вращений.
+  const boardBeforeExpansion = applyStickyWilds(
+    board,
+    session.bonus.stickyReels,
+  );
 
-    const bonus = resolveFreeSpin(
-        session.bonus,
-        board,
-        spin.totalWin,
-    );
+  // Добавляем в список новые барабаны, на которых выпал Wild.
+  const stickyReels = collectStickyWilds(
+    boardBeforeExpansion,
+    session.bonus.stickyReels,
+    () => 1,
+  );
 
-    return {
-        session: {
-            ...session,
-            balance: session.balance + spin.totalWin,
-            bonus,
-            bonusBet:isBonusActive(bonus) ? bonusBet : null,
-        },
-     spin,
-};
+  // Получаем доску с полностью расширенными Wild-барабанами.
+  const expandedBoard = applyStickyWilds(
+    boardBeforeExpansion,
+    stickyReels,
+  );
+
+  // Рассчитываем выигрыш по расширенной доске.
+  const evaluatedSpin = evaluateSpin(
+    expandedBoard,
+    BASE_PAYLINES,
+    bonusBet,
+  );
+
+  // Скаттеры считаем до расширения новых Wild.
+  const spin: SpinResults = {
+    ...evaluatedSpin,
+    scatterCount: countScatters(boardBeforeExpansion),
+  };
+
+  const bonus = resolveFreeSpin(
+    {
+      ...session.bonus,
+      stickyReels,
+    },
+    boardBeforeExpansion,
+    spin.totalWin,
+  );
+
+  return {
+    session: {
+      ...session,
+      balance: session.balance + spin.totalWin,
+      bonus,
+      bonusBet: isBonusActive(bonus) ? bonusBet : null,
+    },
+    spin,
+    board: expandedBoard,
+    boardBeforeExpansion,
+  };
 }

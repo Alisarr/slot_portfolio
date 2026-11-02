@@ -14,7 +14,6 @@ export interface EngineSpinResult extends GameSpinResults{
 }
 
 export interface EngineSpinResult extends GameSpinResults {
-    readonly board: Board;
     readonly mode: "paid" | "free";
     readonly roundId: number;
 }
@@ -57,7 +56,6 @@ export class GameEngine {
 
         return {
           ...result,
-          board,
           mode: isFreeSpin ? "free" : "paid",
           roundId: this.completeSpins,
         };

@@ -1,12 +1,14 @@
 import type { Board } from "../core/types";
 import { countScatters } from "../core/countScatters";
 import { addFreeSpins, consumeFreeSpin } from "./freeSpins";
+import type { StickyWildReel } from "./stickyWilds";
 
 export interface BonusState {
   remainingSpins: number;
   totalWin: number;
   stormCharge: number;
   overloadActive: boolean;
+  stickyReels: readonly StickyWildReel[];
 }
 
 export function createBonusState(): BonusState {
@@ -15,6 +17,7 @@ export function createBonusState(): BonusState {
     totalWin: 0,
     stormCharge: 0,
     overloadActive: false,
+    stickyReels: [],
   };
 }
 
