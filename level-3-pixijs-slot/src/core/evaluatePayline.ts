@@ -7,9 +7,16 @@ import type {
   PaylineWin,
 } from "./types";
 
+type PayoutCalculator = (match: PaylineMatch) => number;
+
+function getBasePayout(match: PaylineMatch): number {
+  return getPaylineWin(match, 1);
+}
+
 export function evaluatePayline(
   board: Board,
   payline: Payline,
+  calculatePayout: PayoutCalculator = getBasePayout,
 ): PaylineMatch | null {
   let matchSymbol = board[0][payline[0]];
 
@@ -60,8 +67,8 @@ export function evaluatePayline(
     count: leadingWildCount,
   }
 
-  const symbolPayout = getPaylineWin(symbolMatch, 1);
-  const wildPayout = getPaylineWin(wildMatch, 1);
+  const symbolPayout = calculatePayout(symbolMatch);
+  const wildPayout = calculatePayout(wildMatch);
 
   if (wildPayout > symbolPayout) {
     return wildMatch;
@@ -73,16 +80,21 @@ export function evaluatePayline(
 export function evaluatePaylines(
   board: Board,
   paylines: readonly Payline[],
+  calculatePayout: PayoutCalculator = getBasePayout,
 ): PaylineWin[] {
   const wins: PaylineWin[] = [];
 
   for (let paylineIndex = 0; paylineIndex < paylines.length; paylineIndex += 1) {
     const payline = paylines[paylineIndex];
-    const match = evaluatePayline(board, payline);
+    const match = evaluatePayline(
+      board,
+       payline,
+      calculatePayout,
+    );
 
     if (match !== null) {
       wins.push({
-        paylineIndex: paylineIndex,
+        paylineIndex,
         symbol: match.symbol,
         count: match.count,
       });

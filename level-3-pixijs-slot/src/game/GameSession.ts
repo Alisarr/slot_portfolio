@@ -109,6 +109,7 @@ export function playFreeSpin(
     expandedBoard,
     BASE_PAYLINES,
     bonusBet,
+    stickyReels,
   );
 
   // Скаттеры считаем до расширения новых Wild.

@@ -1,17 +1,21 @@
 import type {
     Board,
     Payline,
+    PaylineMatch,
     PaylinePayout,
     SpinResults,
 } from "./types";
+import type { StickyWildReel } from "../bonus/stickyWilds";
 import { evaluatePaylines } from "./evaluatePayline";
 import { getPaylineWin } from "./payouts";
 import { countScatters } from "./countScatters";
+import { getStickyWildMultiplier } from "../bonus/getStickyWildMultiplier";
 
 export function evaluateSpin(
     board: Board,
     paylines: readonly Payline[],
     totalBet: number,
+    stickyReels: readonly StickyWildReel[] = [],
 ): SpinResults {
     const scatterCount = countScatters(board);
 
@@ -24,13 +28,26 @@ export function evaluateSpin(
     }
 
     const lineBet = totalBet / paylines.length;
-    const matches = evaluatePaylines(board, paylines);
+
+    function calculatePayout(match: PaylineMatch): number {
+        const baseWin = getPaylineWin(match, lineBet);
+        const multuplier = getStickyWildMultiplier(
+            match,
+             stickyReels
+            );
+            return baseWin * multuplier;
+    }
+    const matches = evaluatePaylines(
+        board,
+        paylines,
+        calculatePayout,
+        );
 
     const lineWins: PaylinePayout[] = [];
     let totalWin = 0;
 
     for (const match of matches) {
-        const amount = getPaylineWin(match, lineBet);
+        const amount = calculatePayout(match);
 
         lineWins.push({
             ...match,
@@ -42,7 +59,7 @@ export function evaluateSpin(
 
     return {
         lineWins,
-        totalWin: totalWin,
+        totalWin,
         scatterCount,
     };
 }
