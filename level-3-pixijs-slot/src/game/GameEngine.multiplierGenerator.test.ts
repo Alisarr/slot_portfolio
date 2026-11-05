@@ -126,4 +126,72 @@ describe ("Wild multiplier generation in GameENgine", () => {
 
         expect([2, 3, 5]).toContain(multiplier);
     });
+
+    it("starts a new bonus without the previous sticky Wilds", () => {
+  // Платный запуск бонуса и первый фриспин с Wild.
+  const boards: Board[] = [triggerBoard, boardWithWild];
+
+  // Ещё девять досок, чтобы закончить десять фриспинов.
+  for (let index = 0; index < 9; index += 1) {
+    boards.push(boardWithoutWild);
+  }
+
+  // Запуск следующего бонуса и новый Wild.
+  boards.push(triggerBoard, boardWithWild);
+
+  let multiplierCalls = 0;
+
+  const game = new GameEngine(
+    100,
+    boardInOrder(boards),
+    () => {
+      multiplierCalls += 1;
+
+      // Первый новый sticky-барабан получает ×3, следующий — ×5.
+      return multiplierCalls === 1 ? 3 : 5;
+    },
+  );
+
+  game.spin(2);
+  const firstFree = game.spin(2);
+
+  expect(firstFree.session.bonus.stickyReels).toEqual([
+    { reelIndex: 1, multiplier: 3 },
+  ]);
+
+  // Первый фриспин уже сыгран — осталось девять.
+  for (let index = 0; index < 9; index += 1) {
+    game.spin(2);
+  }
+
+  const finishedSession = game.getSession();
+
+  expect(finishedSession.bonus.remainingSpins).toBe(0);
+  expect(finishedSession.bonusBet).toBeNull();
+
+  // Следующее вращение снова платное и запускает новый бонус.
+  const nextPaid = game.spin(2);
+
+  expect(nextPaid.mode).toBe("paid");
+  expect(nextPaid.board).toEqual(triggerBoard);
+  expect(nextPaid.spin.totalWin).toBe(0);
+  expect(nextPaid.session.balance).toBeCloseTo(
+    finishedSession.balance - 2,
+  );
+
+  expect(nextPaid.session.bonus.remainingSpins).toBe(10);
+  expect(nextPaid.session.bonus.totalWin).toBe(0);
+  expect(nextPaid.session.bonus.stickyReels).toEqual([]);
+  expect(multiplierCalls).toBe(1);
+
+  // В новом бонусе множитель назначается заново.
+  const nextFree = game.spin(2);
+
+  expect(nextFree.mode).toBe("free");
+  expect(nextFree.session.bonus.stickyReels).toEqual([
+    { reelIndex: 1, multiplier: 5 },
+  ]);
+  expect(nextFree.spin.totalWin).toBeCloseTo(4);
+  expect(multiplierCalls).toBe(2);
+});
 });
