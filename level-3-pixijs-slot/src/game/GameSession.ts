@@ -74,6 +74,7 @@ export function playPaidSpin(
 export function playFreeSpin(
   session: GameSession,
   board: Board,
+  createMultiplier: () => number = () => 1,
 ): GameSpinResults {
   if (!isBonusActive(session.bonus)) {
     throw new Error("No free spins remaining");
@@ -95,7 +96,7 @@ export function playFreeSpin(
   const stickyReels = collectStickyWilds(
     boardBeforeExpansion,
     session.bonus.stickyReels,
-    () => 1,
+    createMultiplier,
   );
 
   // Получаем доску с полностью расширенными Wild-барабанами.

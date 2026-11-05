@@ -51,7 +51,9 @@ function createScriptedGame(
 
     nextIndex += 1;
     return board;
-  });
+  },
+  () => 1,
+  );
 }
 
 describe("sticky Wilds during free spins", () => {

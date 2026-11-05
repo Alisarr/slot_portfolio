@@ -6,6 +6,7 @@ import { playNextSpin } from "./platNestSpin";
 import { isBonusActive } from "../bonus/BonusState";
 import { BASE_PAYLINES } from "../core/paylines";
 import { validatePaidSpin } from "./validatePaidSpin";
+import { generateWildMultiplier } from "../bonus/generateWildMultiplier";
 
 type BoardGenerator = () => Board;
 
@@ -21,13 +22,16 @@ export interface EngineSpinResult extends GameSpinResults {
 export class GameEngine { 
     private session: GameSession;
     private createBoard: BoardGenerator;
+    private createMultiplier: () => number;
     private completeSpins = 0;
 
     constructor(initialBalance: number,
         createBoard: BoardGenerator = generateBoard,
+        createMultiplier: () => number = generateWildMultiplier,
     ) {
         this.session = createGameSession(initialBalance);
         this.createBoard = createBoard;
+        this.createMultiplier = createMultiplier;
     }
     getSession(): GameSession{
         return this.session;
@@ -49,6 +53,7 @@ export class GameEngine {
             this.session,
             totalBet,
             board,
+            this.createMultiplier,
         );
 
         this.session = result.session;

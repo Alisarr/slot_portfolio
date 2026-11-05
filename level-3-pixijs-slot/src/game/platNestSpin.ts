@@ -6,9 +6,14 @@ export function playNextSpin (
 session: GameSession,
 totalBet: number,
 board: Board,
+createMultiplier: () => number = () => 1,
 ): GameSpinResults {
     if ( isBonusActive(session.bonus)){
-        return playFreeSpin(session,board);
+        return playFreeSpin(
+            session,
+            board,
+            createMultiplier,
+        );
     }
     return playPaidSpin(session, totalBet, board);
 }
