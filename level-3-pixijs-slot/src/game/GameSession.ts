@@ -5,6 +5,7 @@ import {
     awardScatters,
     isBonusActive,
     resolveFreeSpin,
+    isChestChoicePending,
 } from "../bonus/BonusState";
 
 import { evaluateSpin } from "../core/evaluateSpin";
@@ -79,6 +80,10 @@ export function playFreeSpin(
   if (!isBonusActive(session.bonus)) {
     throw new Error("No free spins remaining");
   }
+
+  if (isChestChoicePending(session.bonus)) {
+  throw new Error("Choose a chest before starting free spins");
+}
 
   const bonusBet = session.bonusBet;
 

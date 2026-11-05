@@ -3,7 +3,9 @@ import { generateBoard } from "../core/generateBoard";
 import type { GameSession, GameSpinResults } from "./GameSession";
 import { createGameSession } from "./GameSession";
 import { playNextSpin } from "./platNestSpin";
-import { isBonusActive } from "../bonus/BonusState";
+import { isBonusActive,
+         isChestChoicePending,
+     } from "../bonus/BonusState";
 import { BASE_PAYLINES } from "../core/paylines";
 import { validatePaidSpin } from "./validatePaidSpin";
 import { generateWildMultiplier } from "../bonus/generateWildMultiplier";
@@ -39,6 +41,10 @@ export class GameEngine {
 
     spin(totalBet: number): EngineSpinResult{
         const isFreeSpin = isBonusActive(this.session.bonus);
+
+        if (isFreeSpin && isChestChoicePending(this.session.bonus)) {
+            throw new Error("Choose a chest before starting free spins");
+        }
 
         if (!isFreeSpin) {
             validatePaidSpin(

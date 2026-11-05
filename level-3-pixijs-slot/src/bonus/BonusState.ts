@@ -3,7 +3,12 @@ import { countScatters } from "../core/countScatters";
 import { addFreeSpins, consumeFreeSpin } from "./freeSpins";
 import type { StickyWildReel } from "./stickyWilds";
 
+export type BonusKind = "standard" | "chest";
+export type ChestStatus = "not-required" | "pending" | "claimed";
+
 export interface BonusState {
+  kind: BonusKind,
+  chestStatus: ChestStatus;
   remainingSpins: number;
   totalWin: number;
   stormCharge: number;
@@ -11,8 +16,12 @@ export interface BonusState {
   stickyReels: readonly StickyWildReel[];
 }
 
-export function createBonusState(): BonusState {
+export function createBonusState(
+  kind: BonusKind = "standard",
+): BonusState {
   return {
+    kind,
+    chestStatus: kind === "chest" ? "pending" : "not-required",
     remainingSpins: 0,
     totalWin: 0,
     stormCharge: 0,
@@ -50,4 +59,8 @@ export function resolveFreeSpin(
 
 export function isBonusActive(state: BonusState): boolean {
   return state.remainingSpins > 0;
+}
+
+export function isChestChoicePending(state: BonusState): boolean {
+  return state.kind === "chest" && state.chestStatus === "pending";
 }
