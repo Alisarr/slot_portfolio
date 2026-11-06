@@ -9,6 +9,7 @@ import { isBonusActive,
 import { BASE_PAYLINES } from "../core/paylines";
 import { validatePaidSpin } from "./validatePaidSpin";
 import { generateWildMultiplier } from "../bonus/generateWildMultiplier";
+import { chooseSessionChest } from "./chooseSessionChest";
 
 type BoardGenerator = () => Board;
 
@@ -36,6 +37,17 @@ export class GameEngine {
         this.createMultiplier = createMultiplier;
     }
     getSession(): GameSession{
+        return this.session;
+    }
+    
+    chooseChest(chestIndex: number): GameSession {
+        const nextSession = chooseSessionChest(
+            this.session,
+            chestIndex,
+        );
+
+        this.session = nextSession;
+
         return this.session;
     }
 
