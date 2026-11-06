@@ -1,13 +1,9 @@
 import type { BonusState } from "./BonusState"; 
+import type { ChestReward } from "./ChestTypes";
 import {
     isBonusActive,
     isChestChoicePending,
 } from "./BonusState";
-
-export interface ChestReward {
-    readonly type: "free-spins";
-    readonly spins: number;
-}
 
 export function claimChestReward(
     state: BonusState,

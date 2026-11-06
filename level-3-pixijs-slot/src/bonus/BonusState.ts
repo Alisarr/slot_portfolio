@@ -2,6 +2,7 @@ import type { Board } from "../core/types";
 import { countScatters } from "../core/countScatters";
 import { addFreeSpins, consumeFreeSpin } from "./freeSpins";
 import type { StickyWildReel } from "./stickyWilds";
+import type { ChestRewards  } from "./ChestTypes";
 
 export type BonusKind = "standard" | "chest";
 export type ChestStatus = "not-required" | "pending" | "claimed";
@@ -14,6 +15,8 @@ export interface BonusState {
   stormCharge: number;
   overloadActive: boolean;
   stickyReels: readonly StickyWildReel[];
+  chestRewards: ChestRewards | null;
+  selectedChestIndex: number | null;
 }
 
 export function createBonusState(
@@ -27,6 +30,8 @@ export function createBonusState(
     stormCharge: 0,
     overloadActive: false,
     stickyReels: [],
+    chestRewards: null,
+    selectedChestIndex: null,
   };
 }
 
