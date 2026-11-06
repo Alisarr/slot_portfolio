@@ -10,6 +10,8 @@ import { BASE_PAYLINES } from "../core/paylines";
 import { validatePaidSpin } from "./validatePaidSpin";
 import { generateWildMultiplier } from "../bonus/generateWildMultiplier";
 import { chooseSessionChest } from "./chooseSessionChest";
+import type { ChestRewards } from "../bonus/ChestTypes";
+import { generateChestRewards } from "../bonus/generateChestRewards";
 
 type BoardGenerator = () => Board;
 
@@ -27,14 +29,18 @@ export class GameEngine {
     private createBoard: BoardGenerator;
     private createMultiplier: () => number;
     private completeSpins = 0;
+    private createChestRewards: () => ChestRewards;
 
-    constructor(initialBalance: number,
+    constructor(
+        initialBalance: number,
         createBoard: BoardGenerator = generateBoard,
         createMultiplier: () => number = generateWildMultiplier,
+        createChestRewards: () => ChestRewards = generateChestRewards,
     ) {
         this.session = createGameSession(initialBalance);
         this.createBoard = createBoard;
         this.createMultiplier = createMultiplier;
+        this.createChestRewards = createChestRewards;
     }
     getSession(): GameSession{
         return this.session;
@@ -72,6 +78,7 @@ export class GameEngine {
             totalBet,
             board,
             this.createMultiplier,
+            this.createChestRewards,
         );
 
         this.session = result.session;

@@ -2,7 +2,6 @@ import type { Board, SpinResults } from "../core/types";
 import type { BonusState } from "../bonus/BonusState";
 import {
     createBonusState,
-    awardScatters,
     isBonusActive,
     resolveFreeSpin,
     isChestChoicePending,
@@ -16,6 +15,9 @@ import {
   applyStickyWilds,
   collectStickyWilds,
 } from "../bonus/stickyWilds";
+import type { ChestRewards } from "../bonus/ChestTypes";
+import { startBonus } from "../bonus/startBonus";
+import { generateChestRewards } from "../bonus/generateChestRewards";
 
 export interface GameSession {
     readonly balance: number;
@@ -45,6 +47,7 @@ export function playPaidSpin(
     session: GameSession,
     totalBet: number,
     board: Board,
+    createChestRewards: () => ChestRewards = generateChestRewards
 ): GameSpinResults{
     if(isBonusActive(session.bonus)) {
         throw new Error("Cannot start a paid spin during a bonus");
@@ -56,8 +59,12 @@ export function playPaidSpin(
         board,
         BASE_PAYLINES,
     );
-
- const bonus = awardScatters(createBonusState(), board);
+    
+    const bonus = startBonus(
+      paidResult.spin.scatterCount,
+      createChestRewards,
+    )
+ 
  const bonusBet = isBonusActive(bonus) ? totalBet : null;
 
  return{
