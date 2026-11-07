@@ -12,7 +12,7 @@ export function generateChestRewards(
     ] = [
         {type: "free-spins", spins: 5},
         {type: "bonus-multiplier", multiplier: 3},
-        {type: "free-spins", spins: 7},
+        {type: "sticky-wild", reelIndex: 2},
         {type: "free-spins", spins: 10},
         {type: "free-spins", spins: 15},
     ];

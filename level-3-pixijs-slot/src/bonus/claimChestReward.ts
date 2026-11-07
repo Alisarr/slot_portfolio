@@ -25,6 +25,30 @@ export function claimChestReward(
         chestStatus: "claimed",
     };
 }
+
+if (reward.type == "sticky-wild") {
+    const reelIndex = reward.reelIndex;
+    
+
+  if (!Number.isInteger(reelIndex) || reelIndex < 0 || reelIndex > 4) {
+    throw new Error("Reward reel index must be an integer from 0 to 4");
+  }
+  const alreadySticky = state.stickyReels.some(
+    (reel) => reel.reelIndex === reelIndex,
+  );
+  
+if(alreadySticky) {
+    throw new Error("Reward reel is already sticky");
+}
+return {
+    ...state,
+    stickyReels: [
+        ...state.stickyReels,
+        { reelIndex, multiplier: 1},
+    ],
+    chestStatus: "claimed",
+};
+}
 if (reward.multiplier !== 3) {
     throw new Error("Bonus multiplier must be 3");
 }
