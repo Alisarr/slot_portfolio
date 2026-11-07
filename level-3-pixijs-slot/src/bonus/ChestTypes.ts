@@ -14,6 +14,9 @@ export type ChestReward =
 | {
     readonly type: "wild-boost";
     readonly amount: number;
+}
+| {
+    readonly type: "symbol-upgrade";
 };
 
 

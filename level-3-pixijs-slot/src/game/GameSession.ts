@@ -18,6 +18,7 @@ import {
 import type { ChestRewards } from "../bonus/ChestTypes";
 import { startBonus } from "../bonus/startBonus";
 import { generateChestRewards } from "../bonus/generateChestRewards";
+import { upgradeSymbols } from "../bonus/upgradeSymbols";
 
 export interface GameSession {
     readonly balance: number;
@@ -117,9 +118,13 @@ export function playFreeSpin(
     stickyReels,
   );
 
+  const finalBoard = session.bonus.symbolUpgradeActive
+  ? upgradeSymbols(expandedBoard)
+  : expandedBoard;
+
   // Рассчитываем выигрыш по расширенной доске.
   const evaluatedSpin = evaluateSpin(
-    expandedBoard,
+    finalBoard,
     BASE_PAYLINES,
     bonusBet,
     stickyReels,
@@ -156,7 +161,7 @@ export function playFreeSpin(
       bonusBet: isBonusActive(bonus) ? bonusBet : null,
     },
     spin,
-    board: expandedBoard,
+    board: finalBoard,
     boardBeforeExpansion,
   };
 }

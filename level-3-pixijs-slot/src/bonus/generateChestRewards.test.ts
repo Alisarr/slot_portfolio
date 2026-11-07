@@ -6,7 +6,7 @@ const originalRewards = [
   { type: "bonus-multiplier", multiplier: 3 },
   { type: "sticky-wild", reelIndex: 2 },
   { type: "wild-boost", amount: 1 },
-  { type: "free-spins", spins: 15 },
+  { type: "symbol-upgrade" },
 ];
 
 const shuffledRewards = [

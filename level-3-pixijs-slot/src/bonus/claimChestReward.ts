@@ -61,6 +61,14 @@ if( reward.type === "wild-boost"){
         chestStatus: "claimed",
     };
 }
+
+if (reward.type === "symbol-upgrade"){
+    return {
+        ...state,
+        symbolUpgradeActive: true,
+        chestStatus: "claimed",
+    };
+}
 if (reward.multiplier !== 3) {
     throw new Error("Bonus multiplier must be 3");
 }

@@ -14,7 +14,7 @@ export function generateChestRewards(
         {type: "bonus-multiplier", multiplier: 3},
         {type: "sticky-wild", reelIndex: 2},
         {type: "wild-boost", amount: 1},
-        {type: "free-spins", spins: 15},
+        {type: "symbol-upgrade"},
     ];
 
     for (let index = rewards.length - 1; index > 0; index -= 1){

@@ -19,6 +19,7 @@ export interface BonusState {
   selectedChestIndex: number | null;
   winMultiplier: number;
   wildMultiplierBoost: number;
+  symbolUpgradeActive: boolean;
 }
 
 export function createBonusState(
@@ -36,6 +37,7 @@ export function createBonusState(
     selectedChestIndex: null,
     winMultiplier: 1,
     wildMultiplierBoost: 0,
+    symbolUpgradeActive: false,
   };
 }
 
