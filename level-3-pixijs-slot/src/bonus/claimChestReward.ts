@@ -49,6 +49,18 @@ return {
     chestStatus: "claimed",
 };
 }
+
+if( reward.type === "wild-boost"){
+    if( reward.amount !== 1) {
+        throw new Error("Wild multiplier boost mest be 1");
+    }
+
+    return {
+        ...state,
+        wildMultiplierBoost: reward.amount,
+        chestStatus: "claimed",
+    };
+}
 if (reward.multiplier !== 3) {
     throw new Error("Bonus multiplier must be 3");
 }

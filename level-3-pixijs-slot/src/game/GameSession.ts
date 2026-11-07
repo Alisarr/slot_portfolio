@@ -108,7 +108,7 @@ export function playFreeSpin(
   const stickyReels = collectStickyWilds(
     boardBeforeExpansion,
     session.bonus.stickyReels,
-    createMultiplier,
+   () =>  createMultiplier() + session.bonus.wildMultiplierBoost,
   );
 
   // Получаем доску с полностью расширенными Wild-барабанами.

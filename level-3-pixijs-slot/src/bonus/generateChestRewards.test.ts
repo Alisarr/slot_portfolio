@@ -5,7 +5,7 @@ const originalRewards = [
   { type: "free-spins", spins: 5 },
   { type: "bonus-multiplier", multiplier: 3 },
   { type: "sticky-wild", reelIndex: 2 },
-  { type: "free-spins", spins: 10 },
+  { type: "wild-boost", amount: 1 },
   { type: "free-spins", spins: 15 },
 ];
 

@@ -10,7 +10,12 @@ export type ChestReward =
 | {
     readonly type: "sticky-wild";
     readonly reelIndex: 0 | 1 | 2 | 3 | 4;
+}
+| {
+    readonly type: "wild-boost";
+    readonly amount: number;
 };
+
 
 export type ChestRewards = readonly [
     ChestReward,
