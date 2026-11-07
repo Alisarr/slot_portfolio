@@ -1,8 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { generateChestRewards } from "./generateChestRewards";
 
+const originalRewards = [
+  { type: "free-spins", spins: 5 },
+  { type: "bonus-multiplier", multiplier: 3 },
+  { type: "free-spins", spins: 7 },
+  { type: "free-spins", spins: 10 },
+  { type: "free-spins", spins: 15 },
+];
+
+const shuffledRewards = [
+  originalRewards[1],
+  originalRewards[2],
+  originalRewards[3],
+  originalRewards[4],
+  originalRewards[0],
+];
+
 describe("generateChestRewards", () => {
-  it("shuffles all five rewards", () => {
+  it("shuffles all five rewards without losing any", () => {
     let calls = 0;
 
     const rewards = generateChestRewards(() => {
@@ -10,9 +26,7 @@ describe("generateChestRewards", () => {
       return 0;
     });
 
-    expect(rewards.map((reward) => reward.spins)).toEqual([
-      5, 7, 10, 15, 3,
-    ]);
+    expect(rewards).toEqual(shuffledRewards);
     expect(calls).toBe(4);
   });
 
@@ -20,14 +34,8 @@ describe("generateChestRewards", () => {
     const first = generateChestRewards(() => 0);
     const second = generateChestRewards(() => 0.999);
 
-    expect(second.map((reward) => reward.spins)).toEqual([
-      3, 5, 7, 10, 15,
-    ]);
-
-    expect(first.map((reward) => reward.spins)).toEqual([
-      5, 7, 10, 15, 3,
-    ]);
-
+    expect(first).toEqual(shuffledRewards);
+    expect(second).toEqual(originalRewards);
     expect(first).not.toBe(second);
   });
 

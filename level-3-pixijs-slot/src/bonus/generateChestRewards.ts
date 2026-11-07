@@ -10,8 +10,8 @@ export function generateChestRewards(
         ChestReward,
         ChestReward,
     ] = [
-        {type: "free-spins", spins: 3},
         {type: "free-spins", spins: 5},
+        {type: "bonus-multiplier", multiplier: 3},
         {type: "free-spins", spins: 7},
         {type: "free-spins", spins: 10},
         {type: "free-spins", spins: 15},

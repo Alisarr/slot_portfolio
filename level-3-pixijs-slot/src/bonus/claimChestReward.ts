@@ -15,13 +15,24 @@ export function claimChestReward(
     if (!isChestChoicePending(state)) {
         throw new Error("No chest reward is pending");
     }
+    if(reward.type === "free-spins"){
     if (!Number.isInteger(reward.spins) || reward.spins <= 0) {
         throw new Error("Reward spins must be a positive integer");
     }
-
     return {
         ...state,
         remainingSpins: state.remainingSpins + reward.spins,
+        chestStatus: "claimed",
+    };
+}
+if (reward.multiplier !== 3) {
+    throw new Error("Bonus multiplier must be 3");
+}
+
+    return {
+        ...state,
+       winMultiplier: reward.multiplier,
+
         chestStatus: "claimed",
     };
 } 

@@ -125,9 +125,17 @@ export function playFreeSpin(
     stickyReels,
   );
 
-  // Скаттеры считаем до расширения новых Wild.
+  const winMultiplier = session.bonus.winMultiplier;
+
   const spin: SpinResults = {
     ...evaluatedSpin,
+
+    lineWins: evaluatedSpin.lineWins.map((win) => ({
+      ...win,
+      amount: win.amount * winMultiplier,
+    })),
+
+    totalWin: evaluatedSpin.totalWin * winMultiplier,
     scatterCount: countScatters(boardBeforeExpansion),
   };
 

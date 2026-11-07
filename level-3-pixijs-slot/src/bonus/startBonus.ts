@@ -1,5 +1,5 @@
 import type { BonusState } from "./BonusState";
-import type { ChestReward, ChestRewards } from "./ChestTypes";
+import type { ChestRewards } from "./ChestTypes";
 import { createBonusState } from "./BonusState";
 import { getFreeSpinsAward } from "./getFreeSpinsAward";
 import { generateChestRewards } from "./generateChestRewards";

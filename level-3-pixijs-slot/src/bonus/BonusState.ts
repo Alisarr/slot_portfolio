@@ -17,6 +17,7 @@ export interface BonusState {
   stickyReels: readonly StickyWildReel[];
   chestRewards: ChestRewards | null;
   selectedChestIndex: number | null;
+  winMultiplier: number;
 }
 
 export function createBonusState(
@@ -32,6 +33,7 @@ export function createBonusState(
     stickyReels: [],
     chestRewards: null,
     selectedChestIndex: null,
+    winMultiplier: 1,
   };
 }
 
