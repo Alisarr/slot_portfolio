@@ -1,43 +1,56 @@
 import { deepStrictEqual } from "node:assert";
-import { randomUUID } from "node:crypto";
-import { Pool } from "pg";
 import { createGameSession } from "../src/game/GameSession.ts";
 import type { GameSession } from "../src/game/GameSession.ts";
-
-const pool = new Pool({ connectionTimeoutMillis: 5000 });
+import { pool } from "./db.ts";
+import {
+  createStoredSession,
+  loadStoredSession,
+  updateStoredSession,
+} from "./sessionRepository.ts";
 
 try {
-  const initial = createGameSession(100);
+  const requestedId = process.argv[2];
 
-  const session: GameSession = {
-    ...initial,
-    bonusBet: 2,
-    bonus: {
-      ...initial.bonus,
-      remainingSpins: 7,
-      stickyReels: [{ reelIndex: 1, multiplier: 3 }],
-    },
-  };
+  if (requestedId !== undefined) {
+    const stored = await loadStoredSession(requestedId);
 
-  const id = randomUUID();
+    if (stored === null) {
+      throw new Error("Game session not found");
+    }
 
-  await pool.query(
-    "INSERT INTO game_sessions (id, state) VALUES ($1, $2::jsonb)",
-    [id, JSON.stringify(session)],
-  );
+    console.log("Loaded session:", stored.id);
+    console.dir(stored.state, { depth: null });
+  } else {
+    const initial = createGameSession(100);
 
-  const result = await pool.query<{ state: unknown }>(
-    "SELECT state FROM game_sessions WHERE id = $1",
-    [id],
-  );
+    const id = await createStoredSession(initial);
+    const created = await loadStoredSession(id);
 
-  const restored = result.rows[0]?.state;
-  deepStrictEqual(restored, session);
+    deepStrictEqual(created?.state, initial);
 
-  console.log("Session saved and loaded successfully:", id);
-  console.dir(restored, { depth: null });
+    const updated: GameSession = {
+      ...initial,
+      balance: 98,
+      bonusBet: 2,
+      bonus: {
+        ...initial.bonus,
+        remainingSpins: 7,
+        stickyReels: [{ reelIndex: 1, multiplier: 3 }],
+      },
+    };
+
+    await updateStoredSession(id, updated);
+
+    const restored = await loadStoredSession(id);
+    deepStrictEqual(restored?.state, updated);
+
+    console.log("Create, update and load: OK");
+    console.log("Session ID:", id);
+  }
 } catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
+  console.error(
+    error instanceof Error ? error.message : String(error),
+  );
   process.exitCode = 1;
 } finally {
   await pool.end();
