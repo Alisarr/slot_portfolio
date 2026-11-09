@@ -12,6 +12,7 @@ import {
   loadStoredSession,
 } from "./sessionRepository.ts";
 import { spinStoredSession } from "./spinStoredSession.ts";
+import { randomUUID } from "node:crypto";
 
 const losingBoard = [
   ["low-1", "low-1", "low-1"],
@@ -36,7 +37,7 @@ try {
 
   // Сохраняем сессию, выполняем спин и загружаем её заново.
   const id = await createStoredSession(active);
-  const result = await spinStoredSession(id, 2, () => losingBoard);
+  const result = await spinStoredSession(id, randomUUID(), 2, () => losingBoard);
   const restored = await loadStoredSession(id);
 
   strictEqual(result.mode, "free");
@@ -58,7 +59,7 @@ try {
   let boardCalls = 0;
 
   await rejects(
-    () => spinStoredSession(poorId, 2, () => {
+    () => spinStoredSession(poorId, randomUUID(),  2, () => {
       boardCalls += 1;
       return losingBoard;
     }),
@@ -75,8 +76,8 @@ try {
   const parallelId = await createStoredSession(active);
 
   const results = await Promise.all([
-    spinStoredSession(parallelId, 2, () => losingBoard),
-    spinStoredSession(parallelId, 2, () => losingBoard),  
+    spinStoredSession(parallelId, randomUUID(),  2, () => losingBoard),
+    spinStoredSession(parallelId, randomUUID(),  2, () => losingBoard),  
 ]);
 
 const remainingCounts = results
