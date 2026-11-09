@@ -72,6 +72,38 @@ try {
     poorSession,
   );
 
+  const parallelId = await createStoredSession(active);
+
+  const results = await Promise.all([
+    spinStoredSession(parallelId, 2, () => losingBoard),
+    spinStoredSession(parallelId, 2, () => losingBoard),  
+]);
+
+const remainingCounts = results
+.map((spinResult) => spinResult.session.bonus.remainingSpins)
+.sort((a, b) => a - b);
+
+deepStrictEqual(remainingCounts, [5, 6]);
+
+for (const spinResult of results) {
+    strictEqual(spinResult.mode, "free");
+    strictEqual(spinResult.spin.totalWin, 0);
+    strictEqual(spinResult.session.balance, 98);
+    strictEqual(spinResult.session.bonusBet, 2);
+}
+
+const afterParrel = await loadStoredSession(parallelId);
+
+deepStrictEqual(afterParrel?.state, {
+    ...active,
+    bonus: {
+        ...active.bonus,
+        remainingSpins: 5,
+    },
+});
+
+console.log("Concurrent free spins saved: 7 -> 5; balance: 98");
+
   console.log("Free spin saved: 7 -> 6; balance: 98; bonus bet: 2");
   console.log("Invalid paid spin: rejected; session unchanged");
   console.log("Free-spin session ID:", id);
