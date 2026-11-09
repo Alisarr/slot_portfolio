@@ -14,7 +14,8 @@
     "db:session-check": "node --env-file=server/.env --import tsx server/checkSessionStorage.ts",
     "check": "npm run server:typecheck && npm run test && npm run build",
     "db:spin-check": "node --env-file=server/.env --import tsx server/checkStoredSpin.ts",
-    "db:idempotency-check": "node --env-file=server/.env --import tsx server/checkSpinIdempotency.ts"
+    "db:idempotency-check": "node --env-file=server/.env --import tsx server/checkSpinIdempotency.ts",
+    "db:chest-check": "node --env-file=server/.env --import tsx server/checkStoredChest.ts"
   },
   "engines": {
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
