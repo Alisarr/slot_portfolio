@@ -7,19 +7,22 @@ import type {
   loadStoredSession,
 } from "./sessionRepository.ts";
 import { buildApp } from "./app.ts";
+import { spinStoredSession } from "./spinStoredSession.ts";
 
 const sessionId = "33df6a40-35f1-4fc7-a7f6-9a4f922d0084";
 
 const loadSession = vi.fn<typeof loadStoredSession>();
 const createSession = vi.fn<typeof createStoredSession>();
+const spinSession = vi.fn<typeof spinStoredSession>();
 
 let app: ReturnType<typeof buildApp>;
 
 beforeEach(() => {
   loadSession.mockReset();
   createSession.mockReset();
+  spinSession.mockReset();
 
-  app = buildApp({ loadSession, createSession });
+  app = buildApp({ loadSession, createSession, spinSession, });
 });
 
 afterEach(async () => {

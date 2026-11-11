@@ -2,11 +2,13 @@ import { buildApp } from "./app";
 import { createStoredSession,
     loadStoredSession, } from "./sessionRepository";
 import { pool } from "./db";
+import { spinStoredSession } from "./spinStoredSession";
 
 
 const app = buildApp({
     loadSession: loadStoredSession,
     createSession: createStoredSession,
+    spinSession: spinStoredSession,
 },
 true,
 );

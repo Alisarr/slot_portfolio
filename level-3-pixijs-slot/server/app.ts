@@ -6,6 +6,8 @@ import type {
   loadStoredSession,
 } from "./sessionRepository.ts";
 import { toPublicGameSession } from "./toPublicGameSession.ts";
+import type { spinStoredSession } from "./spinStoredSession.ts";
+import { registerSpinRoutes } from "./registerSpinRoutes.ts";
 
 const sessionIdSchema = z.uuid();
 const createSessionBodySchema = z.strictObject({}).optional();
@@ -15,13 +17,14 @@ const DEMO_INITIAL_BALANCE = 100;
 interface AppDependencies {
   readonly loadSession: typeof loadStoredSession;
   readonly createSession: typeof createStoredSession;
+  readonly spinSession: typeof spinStoredSession;
 }
 
 export function buildApp(
   dependencies: AppDependencies,
   logger = false,
 ) {
-  const { loadSession, createSession } = dependencies;
+  const { loadSession, createSession, spinSession } = dependencies;
 
   const app = Fastify({ logger });
 
@@ -95,6 +98,8 @@ export function buildApp(
       };
     },
   );
+
+  registerSpinRoutes(app, spinSession);
 
   return app;
 }
