@@ -2,17 +2,24 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createGameSession } from "../src/game/GameSession.ts";
 import { startBonus } from "../src/bonus/startBonus.ts";
 import { generateChestRewards } from "../src/bonus/generateChestRewards.ts";
-import type { loadStoredSession } from "./sessionRepository.ts";
+import type {
+  createStoredSession,
+  loadStoredSession,
+} from "./sessionRepository.ts";
 import { buildApp } from "./app.ts";
 
 const sessionId = "33df6a40-35f1-4fc7-a7f6-9a4f922d0084";
+
 const loadSession = vi.fn<typeof loadStoredSession>();
+const createSession = vi.fn<typeof createStoredSession>();
 
 let app: ReturnType<typeof buildApp>;
 
 beforeEach(() => {
   loadSession.mockReset();
-  app = buildApp(loadSession);
+  createSession.mockReset();
+
+  app = buildApp({ loadSession, createSession });
 });
 
 afterEach(async () => {
@@ -101,4 +108,87 @@ describe("GET /sessions/:id", () => {
       error: "Internal server error",
     });
   });
+  describe("POST /sessions", () => {
+  it("saves a new demo session and returns its public state", async () => {
+    createSession.mockResolvedValue(sessionId);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/sessions",
+      payload: {},
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.headers.location).toBe(`/sessions/${sessionId}`);
+    expect(response.headers["cache-control"]).toBe("no-store");
+
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      createGameSession(100),
+    );
+
+    expect(response.json()).toMatchObject({
+      id: sessionId,
+      session: {
+        balance: 100,
+        bonusBet: null,
+        bonus: {
+          remainingSpins: 0,
+          chestStatus: "not-required",
+        },
+      },
+    });
+
+    expect(response.json().session.bonus)
+      .not.toHaveProperty("chestRewards");
+  });
+
+  it("rejects a balance supplied by the client", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/sessions",
+      payload: { balance: 999999 },
+    });
+
+    expect(response.statusCode).toBe(400);
+
+    expect(response.json()).toEqual({
+      error: "Session creation accepts no fields",
+    });
+
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
+  it("rejects malformed JSON before creating a session", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/sessions",
+      headers: { "content-type": "application/json" },
+      payload: "{",
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toEqual({
+      error: "Invalid request",
+    });
+
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
+  it("returns a generic error if saving fails", async () => {
+    createSession.mockRejectedValue(
+      new Error("Private database details"),
+    );
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/sessions",
+      payload: {},
+    });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.json()).toEqual({
+      error: "Internal server error",
+    });
+  });
+});
 });

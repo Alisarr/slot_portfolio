@@ -1,9 +1,15 @@
 import { buildApp } from "./app";
-import { loadStoredSession } from "./sessionRepository";
+import { createStoredSession,
+    loadStoredSession, } from "./sessionRepository";
 import { pool } from "./db";
 
 
-const app = buildApp(loadStoredSession, true);
+const app = buildApp({
+    loadSession: loadStoredSession,
+    createSession: createStoredSession,
+},
+true,
+);
 
 app.addHook("onClose", async () => {
     await pool.end();
