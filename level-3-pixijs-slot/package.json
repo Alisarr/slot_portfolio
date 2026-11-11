@@ -15,12 +15,14 @@
     "check": "npm run server:typecheck && npm run test && npm run build",
     "db:spin-check": "node --env-file=server/.env --import tsx server/checkStoredSpin.ts",
     "db:idempotency-check": "node --env-file=server/.env --import tsx server/checkSpinIdempotency.ts",
-    "db:chest-check": "node --env-file=server/.env --import tsx server/checkStoredChest.ts"
+    "db:chest-check": "node --env-file=server/.env --import tsx server/checkStoredChest.ts",
+    "server:dev": "node --env-file=server/.env --import tsx server/httpServer.ts"
   },
   "engines": {
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
   },
   "dependencies": {
+    "fastify": "^5.12.8",
     "pg": "^8.23.1",
     "pixi.js": "^8.20.1",
     "zod": "^4.6.7"
