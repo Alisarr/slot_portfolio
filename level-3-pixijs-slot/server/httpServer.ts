@@ -3,12 +3,14 @@ import { createStoredSession,
     loadStoredSession, } from "./sessionRepository";
 import { pool } from "./db";
 import { spinStoredSession } from "./spinStoredSession";
+import { chooseStoredChest } from "./chooseStoredChest";
 
 
 const app = buildApp({
     loadSession: loadStoredSession,
     createSession: createStoredSession,
     spinSession: spinStoredSession,
+    chooseChest: chooseStoredChest,
 },
 true,
 );

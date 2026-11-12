@@ -12,6 +12,7 @@ import type {
   StoredSpinResult,
 } from "./spinStoredSession.ts";
 import { buildApp } from "./app.ts";
+import { chooseStoredChest } from "./chooseStoredChest.ts";
 
 const sessionId = "33df6a40-35f1-4fc7-a7f6-9a4f922d0084";
 const requestId = "de4bff1e-aa0f-4bac-92bb-8d7dae52eb26";
@@ -29,6 +30,7 @@ const board = [
 const loadSession = vi.fn<typeof loadStoredSession>();
 const createSession = vi.fn<typeof createStoredSession>();
 const spinSession = vi.fn<typeof spinStoredSession>();
+const chooseChest = vi.fn<typeof chooseStoredChest>();
 
 let app: ReturnType<typeof buildApp>;
 
@@ -36,8 +38,9 @@ beforeEach(() => {
   loadSession.mockReset();
   createSession.mockReset();
   spinSession.mockReset();
+  chooseChest.mockReset();
 
-  app = buildApp({ loadSession, createSession, spinSession });
+  app = buildApp({ loadSession, createSession, spinSession, chooseChest, });
 });
 
 afterEach(async () => {

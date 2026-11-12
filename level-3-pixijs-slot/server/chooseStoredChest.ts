@@ -27,7 +27,7 @@ export async function chooseStoredChest(
         const row = stored.rows[0];
 
         if (row === undefined) {
-            throw new Error ("Game Session not found");
+            throw new Error ("Game session not found");
         }
 
        const previous = await client.query<{
@@ -63,7 +63,7 @@ export async function chooseStoredChest(
         );
 
         if( updated.rowCount !== 1) {
-            throw new Error("Game sessions not found");
+            throw new Error("Game session not found");
         }
 
         await client.query(

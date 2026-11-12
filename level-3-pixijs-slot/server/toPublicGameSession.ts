@@ -13,7 +13,7 @@ export function toPublicGameSession(session: GameSession) {
             remainingSpins: bonus.remainingSpins,
             totalWin: bonus.totalWin,
             winMultiplier: bonus.winMultiplier,
-            wildMuliplierBoost: bonus.wildMultiplierBoost,
+            wildMultiplierBoost: bonus.wildMultiplierBoost,
             symbolUpgradeActive: bonus.symbolUpgradeActive,
             stormCharge: bonus.stormCharge,
             overloadActive: bonus.overloadActive,
