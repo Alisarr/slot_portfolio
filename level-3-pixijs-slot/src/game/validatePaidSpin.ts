@@ -1,4 +1,5 @@
 import type { Payline } from "../core/types";
+import { GameError } from "../shared/GameError.ts";
 
 export function validatePaidSpin(
     balance: number,
@@ -19,4 +20,10 @@ export function validatePaidSpin(
     if (balance < totalBet) {
         throw new Error("Insufficient balance");
     }
+    if (balance < totalBet) {
+  throw new GameError(
+    "INSUFFICIENT_BALANCE",
+    "Insufficient balance",
+  );
+}
 }

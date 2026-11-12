@@ -13,6 +13,7 @@ import type {
 } from "./spinStoredSession.ts";
 import { buildApp } from "./app.ts";
 import { chooseStoredChest } from "./chooseStoredChest.ts";
+import { GameError } from "../src/shared/GameError.ts";
 
 const sessionId = "33df6a40-35f1-4fc7-a7f6-9a4f922d0084";
 const requestId = "de4bff1e-aa0f-4bac-92bb-8d7dae52eb26";
@@ -142,26 +143,23 @@ describe("POST /sessions/:id/spins", () => {
   });
 
   it.each([
-    ["Game session not found", 404],
-    ["Insufficient balance", 409],
-    ["Choose a chest before starting free spins", 409],
-    ["Request ID was already used with a different bet", 409],
-  ] as const)("returns the expected status for %s", async (message, status) => {
-    spinSession.mockRejectedValue(new Error(message));
-
-    const response = await app.inject({
-      method: "POST",
-      url: `/sessions/${sessionId}/spins`,
-      payload,
-    });
-
-    expect(response.statusCode).toBe(status);
-    expect(response.json()).toEqual({ error: message });
-  });
-
-  it("hides unexpected internal errors", async () => {
+  ["SESSION_NOT_FOUND", "Game session not found", 404],
+  ["INSUFFICIENT_BALANCE", "Insufficient balance", 409],
+  [
+    "CHEST_CHOICE_REQUIRED",
+    "Choose a chest before starting free spins",
+    409,
+  ],
+  [
+    "REQUEST_ID_CONFLICT",
+    "Request ID was already used with a different bet",
+    409,
+  ],
+] as const)(
+  "returns the expected status for %s",
+  async (code, message, status) => {
     spinSession.mockRejectedValue(
-      new Error("Private database details"),
+      new GameError(code, message),
     );
 
     const response = await app.inject({
@@ -170,9 +168,64 @@ describe("POST /sessions/:id/spins", () => {
       payload,
     });
 
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(status);
     expect(response.json()).toEqual({
-      error: "Internal server error",
+      code,
+      error: message,
     });
+  },
+);
+
+it("keeps the same status when the message changes", async () => {
+  const message = "Недостаточно средств для этой ставки";
+
+  spinSession.mockRejectedValue(
+    new GameError("INSUFFICIENT_BALANCE", message),
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: `/sessions/${sessionId}/spins`,
+    payload,
   });
+
+  expect(response.statusCode).toBe(409);
+  expect(response.json()).toEqual({
+    code: "INSUFFICIENT_BALANCE",
+    error: message,
+  });
+});
+
+it("does not classify a plain error by its message", async () => {
+  spinSession.mockRejectedValue(
+    new Error("Insufficient balance"),
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: `/sessions/${sessionId}/spins`,
+    payload,
+  });
+
+  expect(response.statusCode).toBe(500);
+  expect(response.json()).toEqual({
+    error: "Internal server error",
+  });
+});
+it("hides unexpected internal errors", async () => {
+  spinSession.mockRejectedValue(
+    new Error("Private database details"),
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: `/sessions/${sessionId}/spins`,
+    payload,
+  });
+
+  expect(response.statusCode).toBe(500);
+  expect(response.json()).toEqual({
+    error: "Internal server error",
+  });
+});
 });

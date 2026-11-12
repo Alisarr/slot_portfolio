@@ -12,6 +12,7 @@ import { playNextSpin } from "../src/game/platNestSpin.ts";
 import { parseGameSession } from "./parseGameSession.ts";
 import { parseStoredSpinResult } from "./parseStoredSpinResult.ts";
 import { pool } from "./db.ts";
+import { GameError } from "../src/shared/GameError.ts";
 
 export interface StoredSpinResult extends GameSpinResults {
   readonly mode: "paid" | "free";
@@ -42,7 +43,10 @@ export async function spinStoredSession(
     const row = stored.rows[0];
 
     if (row === undefined) {
-      throw new Error("Game session not found");
+      throw new GameError(
+     "SESSION_NOT_FOUND",
+     "Game session not found",
+      );
     }
 
     // Сначала проверяем, выполнялся ли этот запрос.
@@ -59,8 +63,11 @@ export async function spinStoredSession(
 
     if (saved !== undefined) {
       if (saved.total_bet !== totalBet) {
-        throw new Error("Request ID was already used with a different bet");
-      }
+       throw new GameError(
+        "REQUEST_ID_CONFLICT",
+        "Request ID was already used with a different bet",
+        );
+       }
 
       const response = parseStoredSpinResult(saved.response);
 
@@ -73,8 +80,11 @@ export async function spinStoredSession(
     const session = parseGameSession(row.state);
     const isFreeSpin = isBonusActive(session.bonus);
 
-    if (isFreeSpin && isChestChoicePending(session.bonus)) {
-      throw new Error("Choose a chest before starting free spins");
+   if (isFreeSpin && isChestChoicePending(session.bonus)) {
+   throw new GameError(
+    "CHEST_CHOICE_REQUIRED",
+    "Choose a chest before starting free spins",
+    );
     }
 
     if (!isFreeSpin) {
@@ -101,7 +111,10 @@ export async function spinStoredSession(
     );
 
     if (updated.rowCount !== 1) {
-      throw new Error("Game session not found");
+      throw new GameError(
+      "SESSION_NOT_FOUND",
+      "Game session not found",
+      );
     }
 
     // Запоминаем ответ в той же транзакции.

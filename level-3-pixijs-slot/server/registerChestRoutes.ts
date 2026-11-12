@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { chooseStoredChest } from "./chooseStoredChest"
 import { toPublicGameSession } from "./toPublicGameSession";
 import { GameError } from "../src/shared/GameError";
-import type { GameErrorCode } from "../src/shared/GameError";
+import { GAME_ERROR_STATUS } from "./gameErrorStatus";
 
 
 const sessionIdSchema = z.uuid();
@@ -13,12 +13,6 @@ const chestBodySchema = z.strictObject ({
     chestIndex: z.number().int().min(0).max(4),
 });
 
-const chestErrorStatuses: Record<GameErrorCode, number> = {
-    SESSION_NOT_FOUND: 404,
-    BONUS_NOT_ACTIVE: 409,
-    CHEST_NOT_PENDING: 409,
-    REQUEST_ID_CONFLICT: 409,
-};
 
 export function registerChestRoutes(
     app: FastifyInstance,
@@ -51,18 +45,18 @@ export function registerChestRoutes(
                     requestId,
                     session: toPublicGameSession(session),
                 };
-            } catch (error) {
-                if (error instanceof GameError) {
-                   return reply
-                   .code(chestErrorStatuses[error.code])
-                   .send({
-                    code: error.code,
-                    error: error.message,
-                   });
-                }
+               } catch (error) {
+               if (error instanceof GameError) {
+               return reply
+              .code(GAME_ERROR_STATUS[error.code])
+              .send({
+              code: error.code,
+              error: error.message,
+             });
+             }
 
-                throw error;
-            }
+  throw error;
+}
         },
     );
 }

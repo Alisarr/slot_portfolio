@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import type { spinStoredSession } from "./spinStoredSession";
 import { toPublicGameSession } from "./toPublicGameSession";
+import { GameError } from "../src/shared/GameError.ts";
+import { GAME_ERROR_STATUS } from "./gameErrorStatus.ts";
 
 
 const sessionIdSchema = z.uuid();
@@ -11,12 +13,7 @@ const spinBodySchema = z.strictObject({
     totalBet: z.number().finite().positive(),
 });
 
-const spinErrorStatuses = new Map<string, number> ([
-    ["Game session not found", 404],
-    ["Insufficient balance", 409],
-    ["Choose a chest before starting free spins", 409],
-    ["Request ID was already used with a different bet", 409],
-]);
+
 
 export function registerSpinRoutes(
     app: FastifyInstance,
@@ -54,17 +51,17 @@ export function registerSpinRoutes(
                     session: toPublicGameSession(result.session),
                 };
             } catch (error) {
-                if (error instanceof Error) {
-                    const status = spinErrorStatuses.get(error.message);
-
-                    if (status !== undefined) {
-                        return reply.code(status).send({
-                            error: error.message,
+                if (error instanceof GameError) {    
+                    return reply
+                     .code(GAME_ERROR_STATUS[error.code])
+                     .send({
+                        code:error.code,
+                        error: error.message,
                         });
-                    }
+                
                 }
 
-                throw error
+                throw error;
             }
         },
     );
