@@ -4,16 +4,23 @@ import {
     isChestChoicePending,
 } from "./BonusState";
 import { claimChestReward } from "./claimChestReward";
+import { GameError } from "../shared/GameError";
 
 export function chooseChest(
     state: BonusState,
     chestIndex: number,
 ): BonusState {
     if (!isBonusActive(state)) {
-        throw new Error("No active bonus");
+        throw new GameError(
+            "BONUS_NOT_ACTIVE",
+            "No active bonus",
+        );
     }
     if (!isChestChoicePending(state)) {
-        throw new Error("No chest reward is pending");
+        throw new GameError(
+             "CHEST_NOT_PENDING",
+            "No chest reward is pending",
+        );
 }
 const rewards = state.chestRewards;
 

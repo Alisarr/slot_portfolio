@@ -9,6 +9,7 @@ import type {
 import type { spinStoredSession } from "./spinStoredSession.ts";
 import type { chooseStoredChest } from "./chooseStoredChest.ts";
 import { buildApp } from "./app.ts";
+import { GameError } from "../src/shared/GameError.ts";
 
 const sessionId = "33df6a40-35f1-4fc7-a7f6-9a4f922d0084";
 const requestId = "de4bff1e-aa0f-4bac-92bb-8d7dae52eb26";
@@ -139,27 +140,20 @@ describe("POST /sessions/:id/chest", () => {
     expect(chooseChest).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ["Game session not found", 404],
-    ["No active bonus", 409],
-    ["No chest reward is pending", 409],
-    ["Request ID was already used with a different chest", 409],
-  ] as const)("returns the expected status for %s", async (message, status) => {
-    chooseChest.mockRejectedValue(new Error(message));
-
-    const response = await app.inject({
-      method: "POST",
-      url: `/sessions/${sessionId}/chest`,
-      payload,
-    });
-
-    expect(response.statusCode).toBe(status);
-    expect(response.json()).toEqual({ error: message });
-  });
-
-  it("hides unexpected internal errors", async () => {
+ it.each([
+  ["SESSION_NOT_FOUND", "Game session not found", 404],
+  ["BONUS_NOT_ACTIVE", "No active bonus", 409],
+  ["CHEST_NOT_PENDING", "No chest reward is pending", 409],
+  [
+    "REQUEST_ID_CONFLICT",
+    "Request ID was already used with a different chest",
+    409,
+  ],
+] as const)(
+  "returns the expected status for %s",
+  async (code, message, status) => {
     chooseChest.mockRejectedValue(
-      new Error("Private database details"),
+      new GameError(code, message),
     );
 
     const response = await app.inject({
@@ -168,9 +162,66 @@ describe("POST /sessions/:id/chest", () => {
       payload,
     });
 
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(status);
     expect(response.json()).toEqual({
-      error: "Internal server error",
+      code,
+      error: message,
     });
+  },
+);
+
+
+it("keeps the same status when the message changes", async () => {
+  const message = "Chose chest alredy finish";
+
+  chooseChest.mockRejectedValue(
+    new GameError("CHEST_NOT_PENDING", message),
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: `/sessions/${sessionId}/chest`,
+    payload,
   });
+
+  expect(response.statusCode).toBe(409);
+  expect(response.json()).toEqual({
+    code: "CHEST_NOT_PENDING",
+    error: message,
+  });
+});
+
+it("does not classify a plain error by its message", async () => {
+  chooseChest.mockRejectedValue(
+    new Error("No chest reward is pending"),
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: `/sessions/${sessionId}/chest`,
+    payload,
+  });
+
+  expect(response.statusCode).toBe(500);
+  expect(response.json()).toEqual({
+    error: "Internal server error",
+  });
+});
+
+it("hides unexpected internal errors", async () => {
+  chooseChest.mockRejectedValue(
+    new Error("Private database details"),
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: `/sessions/${sessionId}/chest`,
+    payload,
+  });
+
+  expect(response.statusCode).toBe(500);
+  expect(response.json()).toEqual({
+    error: "Internal server error",
+  });
+});
 });

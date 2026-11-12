@@ -2,6 +2,7 @@ import type { GameSession } from "../src/game/GameSession";
 import { chooseSessionChest } from "../src/game/chooseSessionChest"
 import { parseGameSession } from "./parseGameSession";
 import { pool } from "./db";
+import { GameError } from "../src/shared/GameError";
 
 
 export async function chooseStoredChest(
@@ -27,7 +28,10 @@ export async function chooseStoredChest(
         const row = stored.rows[0];
 
         if (row === undefined) {
-            throw new Error ("Game session not found");
+            throw new GameError (
+                "SESSION_NOT_FOUND",
+                "Game session not found",
+            );
         }
 
        const previous = await client.query<{
@@ -42,7 +46,10 @@ export async function chooseStoredChest(
 
         if(saved !== undefined) {
             if(saved.chest_index !== chestIndex) {
-                throw new Error("Request ID was already used with a different chest");
+                throw new GameError(
+                    "REQUEST_ID_CONFLICT",
+                    "Request ID was already used with a different chest",
+                );
             }
 
             const response = parseGameSession(saved.response);
@@ -63,7 +70,10 @@ export async function chooseStoredChest(
         );
 
         if( updated.rowCount !== 1) {
-            throw new Error("Game session not found");
+            throw new GameError(
+                "SESSION_NOT_FOUND",
+                "Game session not found",
+            );
         }
 
         await client.query(
