@@ -42,12 +42,15 @@ try {
     const id = await createStoredSession(pending);
     const requestId = randomUUID();
 
-    const [chosen, repeated] = await Promise.all([
+    const [chosenResult, repeatedResult] = await Promise.all([
       chooseStoredChest(id, requestId, chestIndex),
       chooseStoredChest(id, requestId, chestIndex),
     ]);
 
-    deepStrictEqual(repeated, chosen);
+    deepStrictEqual(repeatedResult, chosenResult);
+    strictEqual(chosenResult.version, 1);
+
+    const chosen = chosenResult.session;
     strictEqual(chosen.balance, 100);
     strictEqual(chosen.bonusBet, 2);
     strictEqual(chosen.bonus.chestStatus, "claimed");
@@ -80,6 +83,7 @@ try {
     );
 
     deepStrictEqual((await loadStoredSession(id))?.state, chosen);
+    strictEqual((await loadStoredSession(id))?.version, 1);
 
     const otherChest = chestIndex === 0 ? 1 : 0;
 
@@ -105,6 +109,7 @@ try {
       () => losingBoard,
     );
 
+    strictEqual(spin.version, 2);
     strictEqual(spin.mode, "free");
     strictEqual(spin.spin.totalWin, 0);
 
@@ -120,8 +125,19 @@ try {
       chestIndex,
     );
 
-    deepStrictEqual(oldResponse, chosen);
-    deepStrictEqual((await loadStoredSession(id))?.state, spin.session);
+    deepStrictEqual(oldResponse, chosenResult);
+    strictEqual(oldResponse.version, 1);
+
+
+    deepStrictEqual(
+      (await loadStoredSession(id))?.state,
+       spin.session,
+      );
+
+      strictEqual(
+        (await loadStoredSession(id))?.version,
+        2,
+      );
 
     console.log("Reward saved once:", rewards[chestIndex].type);
   }
@@ -148,7 +164,15 @@ try {
 
   deepStrictEqual(
     (await loadStoredSession(raceId))?.state,
-    successes[0]?.value,
+    successes[0]?.value.session,
+  );
+
+  strictEqual(successes[0]?.value.version, 1);
+
+  strictEqual(
+
+    (await loadStoredSession(raceId))?.version,
+    1,
   );
 
   const count = await pool.query<{ count: number }>(

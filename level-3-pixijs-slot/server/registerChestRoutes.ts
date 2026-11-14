@@ -35,7 +35,7 @@ export function registerChestRoutes(
             const { requestId, chestIndex } = parsedBody.data;
 
             try  {
-                const session = await chooseChest(
+                const result = await chooseChest(
                     parsedId.data,
                     requestId,
                     chestIndex,
@@ -43,7 +43,8 @@ export function registerChestRoutes(
 
                 return {
                     requestId,
-                    session: toPublicGameSession(session),
+                    version: result.version,
+                    session: toPublicGameSession(result.session),
                 };
                } catch (error) {
                if (error instanceof GameError) {

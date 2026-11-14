@@ -1,15 +1,17 @@
-import type { GameSession } from "../src/game/GameSession";
+import type { StoredChestResult } from "./parseStoredChestResult.ts";
+import { parseStoredChestResult } from "./parseStoredChestResult.ts";
 import { chooseSessionChest } from "../src/game/chooseSessionChest"
 import { parseGameSession } from "./parseGameSession";
 import { pool } from "./db";
 import { GameError } from "../src/shared/GameError";
 
 
+
 export async function chooseStoredChest(
     id: string,
     requestId: string,
     chestIndex: number,
-): Promise<GameSession> {
+): Promise<StoredChestResult> {
     if(!Number.isInteger(chestIndex) || chestIndex < 0 || chestIndex > 4) {
         throw new Error("Chest index must be an integer from 0 to 4");
     }
@@ -52,29 +54,39 @@ export async function chooseStoredChest(
                 );
             }
 
-            const response = parseGameSession(saved.response);
-
+            const response = parseStoredChestResult(saved.response);
             await client.query("COMMIT");
             return response;
         }
 
         const session = parseGameSession(row.state);
 
-        const response = parseGameSession(
+        const nextSession = parseGameSession(
             chooseSessionChest(session, chestIndex),
         );
 
-        const updated = await client.query(
-            "UPDATE game_sessions SET state = $2::jsonb, version = version + 1 WHERE id = $1",
-        [id, JSON.stringify(response)],
+        const updated = await client.query<{ version: number}>(
+            `UPDATE game_sessions
+            SET state = $2::jsonb, version = version + 1
+            WHERE id = $1
+            RETURNING version`,
+        [id, JSON.stringify(nextSession)],
         );
 
-        if( updated.rowCount !== 1) {
+        const updateRow = updated.rows[0];
+
+
+        if( updated.rowCount !== 1 || updateRow === undefined) {
             throw new GameError(
                 "SESSION_NOT_FOUND",
                 "Game session not found",
             );
         }
+
+        const response = parseStoredChestResult ({
+            session: nextSession,
+            version: updateRow.version,
+        });
 
         await client.query(
           "INSERT INTO chest_requests (session_id, request_id, chest_index, response) VALUES ($1, $2, $3, $4::jsonb)",

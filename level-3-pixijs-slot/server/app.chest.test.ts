@@ -65,7 +65,10 @@ describe("POST /sessions/:id/chest", () => {
       };
 
       const selected = chooseSessionChest(pending, index);
-      chooseChest.mockResolvedValue(selected);
+      chooseChest.mockResolvedValue({
+        session: selected,
+        version: 4,
+      });
 
       const request = {
         method: "POST" as const,
@@ -79,6 +82,7 @@ describe("POST /sessions/:id/chest", () => {
       expect(first.statusCode).toBe(200);
       expect(replay.statusCode).toBe(200);
       expect(first.headers["cache-control"]).toBe("no-store");
+      expect(first.json().version).toBe(4);
 
       expect(chooseChest).toHaveBeenNthCalledWith(
         1, sessionId, requestId, index,
