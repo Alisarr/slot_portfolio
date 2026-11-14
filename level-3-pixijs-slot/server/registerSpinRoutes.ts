@@ -44,6 +44,7 @@ export function registerSpinRoutes(
 
                 return {
                     requestId,
+                    version: result.version,
                     mode: result.mode,
                     board: result.board,
                     boardBeforeExpansion: result.boardBeforeExpansion,

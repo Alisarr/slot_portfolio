@@ -43,6 +43,7 @@ describe("GET /sessions/:id", () => {
     loadSession.mockResolvedValue({
       id: sessionId,
       state: session,
+      version: 7,
     });
 
     const response = await app.inject({
@@ -52,6 +53,7 @@ describe("GET /sessions/:id", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.headers["cache-control"]).toBe("no-store");
+    expect(response.json().version).toBe(7);
 
     expect(response.json()).toMatchObject({
       id: sessionId,

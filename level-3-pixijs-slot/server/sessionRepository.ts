@@ -6,6 +6,7 @@ import { parseGameSession } from "./parseGameSession.ts"
 interface StoredGameSession {
   readonly id: string;
   readonly state: GameSession;
+  readonly version: number;
 }
 
 export async function createStoredSession(
@@ -27,8 +28,9 @@ export async function loadStoredSession(
   const result = await pool.query<{
     id: string;
     state: unknown;
+    version: number;
   }>(
-    "SELECT id, state FROM game_sessions WHERE id = $1",
+    "SELECT id, state, version FROM game_sessions WHERE id = $1",
     [id],
   );
 
@@ -41,6 +43,7 @@ export async function loadStoredSession(
   return {
     id: row.id,
     state: parseGameSession(row.state),
+    version: row.version,
   };
 }
 
@@ -49,7 +52,7 @@ export async function updateStoredSession(
   session: GameSession,
 ): Promise<void> {
   const result = await pool.query(
-    "UPDATE game_sessions SET state = $2::jsonb WHERE id = $1",
+   "UPDATE game_sessions SET state = $2::jsonb, version = version + 1 WHERE id = $1",
     [id, JSON.stringify(session)],
   );
 

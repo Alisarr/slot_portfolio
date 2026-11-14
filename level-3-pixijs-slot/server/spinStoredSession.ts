@@ -16,6 +16,7 @@ import { GameError } from "../src/shared/GameError.ts";
 
 export interface StoredSpinResult extends GameSpinResults {
   readonly mode: "paid" | "free";
+  readonly version: number | null;
 }
 
 export async function spinStoredSession(
@@ -93,30 +94,35 @@ export async function spinStoredSession(
 
     const board = createBoard();
 
-    const result = playNextSpin(
-      session,
-      totalBet,
-      board,
-      createMultiplier,
-    );
+const result = playNextSpin(
+  session,
+  totalBet,
+  board,
+  createMultiplier,
+);
 
-    const response = parseStoredSpinResult({
-      ...result,
-      mode: isFreeSpin ? "free" : "paid",
-    });
+const updated = await client.query<{ version: number }>(
+  `UPDATE game_sessions
+   SET state = $2::jsonb, version = version + 1
+   WHERE id = $1
+   RETURNING version`,
+  [id, JSON.stringify(result.session)],
+);
 
-    const updated = await client.query(
-      "UPDATE game_sessions SET state = $2::jsonb WHERE id = $1",
-      [id, JSON.stringify(response.session)],
-    );
+const updatedRow = updated.rows[0];
 
-    if (updated.rowCount !== 1) {
-      throw new GameError(
-      "SESSION_NOT_FOUND",
-      "Game session not found",
-      );
-    }
+if (updated.rowCount !== 1 || updatedRow === undefined) {
+  throw new GameError(
+    "SESSION_NOT_FOUND",
+    "Game session not found",
+  );
+}
 
+const response = parseStoredSpinResult({
+  ...result,
+  mode: isFreeSpin ? "free" : "paid",
+  version: updatedRow.version,
+});
     // Запоминаем ответ в той же транзакции.
     await client.query(
       `INSERT INTO spin_requests

@@ -12,6 +12,7 @@ import type { chooseStoredChest} from "./chooseStoredChest.ts"
 import { registerChestRoutes } from "./registerChestRoutes.ts";
 
 
+
 const sessionIdSchema = z.uuid();
 const createSessionBodySchema = z.strictObject({}).optional();
 
@@ -71,6 +72,7 @@ export function buildApp(
       .header("Location", `/sessions/${id}`)
       .send({
         id,
+        version: 0,
         session: toPublicGameSession(session),
       });
   });
@@ -98,6 +100,7 @@ export function buildApp(
 
       return {
         id: stored.id,
+        version: stored.version,
         session: toPublicGameSession(stored.state),
       };
     },

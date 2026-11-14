@@ -51,6 +51,7 @@ afterEach(async () => {
 describe("POST /sessions/:id/spins", () => {
   it("forwards the request and hides rewards in both responses", async () => {
     const result: StoredSpinResult = {
+      version: 3,
       mode: "paid",
       board,
       boardBeforeExpansion: board,
@@ -80,9 +81,11 @@ describe("POST /sessions/:id/spins", () => {
       payload,
     });
 
+
     expect(first.statusCode).toBe(200);
     expect(replay.statusCode).toBe(200);
     expect(first.headers["cache-control"]).toBe("no-store");
+    expect(first.json().version).toBe(3);
 
     expect(spinSession).toHaveBeenNthCalledWith(
       1, sessionId, requestId, 2,

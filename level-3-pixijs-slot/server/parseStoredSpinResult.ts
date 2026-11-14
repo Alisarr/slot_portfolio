@@ -12,6 +12,7 @@ const storedSpinSchema = z.strictObject({
     session: z.unknown(),
     mode: z.enum(["paid", "free"]),
     board,
+    version: z.number().int().nonnegative().nullable().default(null),
     boardBeforeExpansion: board,
     spin: z.strictObject({
         lineWins: z.array(z.strictObject({

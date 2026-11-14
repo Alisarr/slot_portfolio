@@ -65,7 +65,7 @@ export async function chooseStoredChest(
         );
 
         const updated = await client.query(
-            "UPDATE game_sessions SET state = $2::jsonb WHERE id = $1",
+            "UPDATE game_sessions SET state = $2::jsonb, version = version + 1 WHERE id = $1",
         [id, JSON.stringify(response)],
         );
 

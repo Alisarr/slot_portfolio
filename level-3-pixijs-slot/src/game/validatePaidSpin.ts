@@ -18,7 +18,9 @@ export function validatePaidSpin(
         throw new Error("At least one payline is required");
     }
     if (balance < totalBet) {
-        throw new Error("Insufficient balance");
+        throw new GameError("INSUFFICIENT_BALANCE",
+            "Insufficient balance",  
+        );
     }
     if (balance < totalBet) {
   throw new GameError(
