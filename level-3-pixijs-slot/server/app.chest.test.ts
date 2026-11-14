@@ -11,6 +11,7 @@ import type { chooseStoredChest } from "./chooseStoredChest.ts";
 import { buildApp } from "./app.ts";
 import { GameError } from "../src/shared/GameError.ts";
 
+
 const sessionId = "33df6a40-35f1-4fc7-a7f6-9a4f922d0084";
 const requestId = "de4bff1e-aa0f-4bac-92bb-8d7dae52eb26";
 const payload = { requestId, chestIndex: 0 };
@@ -65,9 +66,16 @@ describe("POST /sessions/:id/chest", () => {
       };
 
       const selected = chooseSessionChest(pending, index);
-      chooseChest.mockResolvedValue({
+      chooseChest
+      .mockResolvedValueOnce({
         session: selected,
         version: 4,
+        replayed: false,
+      })
+      .mockResolvedValueOnce({
+        session: selected,
+        version: 4,
+        replayed: true,
       });
 
       const request = {
@@ -107,7 +115,12 @@ describe("POST /sessions/:id/chest", () => {
       expect(first.json().session.bonus)
         .not.toHaveProperty("chestRewards");
 
-      expect(replay.json()).toEqual(first.json());
+      expect(first.json().replayed).toBe(false);
+      
+      expect(replay.json()).toEqual({
+        ...first.json(),
+      replayed: true,
+    });
     },
   );
 

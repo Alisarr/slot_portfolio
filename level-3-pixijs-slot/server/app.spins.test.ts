@@ -67,7 +67,9 @@ describe("POST /sessions/:id/spins", () => {
       },
     };
 
-    spinSession.mockResolvedValue(result);
+    spinSession
+    .mockResolvedValueOnce({...result, replayed: false})
+    .mockResolvedValueOnce({...result, replayed: true});
 
     const first = await app.inject({
       method: "POST",
@@ -109,7 +111,12 @@ describe("POST /sessions/:id/spins", () => {
     expect(first.json().session.bonus)
       .not.toHaveProperty("chestRewards");
 
-    expect(replay.json()).toEqual(first.json());
+    expect(first.json().replayed).toBe(false);
+
+    expect(replay.json()).toEqual({
+      ...first.json(),
+      replayed: true,
+    });
     expect(result.session.bonus.chestRewards).not.toBeNull();
   });
 

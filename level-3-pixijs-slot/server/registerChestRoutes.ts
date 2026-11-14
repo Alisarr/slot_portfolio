@@ -45,6 +45,7 @@ export function registerChestRoutes(
                     requestId,
                     version: result.version,
                     session: toPublicGameSession(result.session),
+                    replayed: result.replayed,
                 };
                } catch (error) {
                if (error instanceof GameError) {

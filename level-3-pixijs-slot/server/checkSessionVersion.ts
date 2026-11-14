@@ -43,6 +43,7 @@ const first = await spinStoredSession(
 );
 
 strictEqual(first.version, 1);
+strictEqual(first.replayed, false);
 await expectVersion(id, 1);
 
 // Повтор первого запроса: используем тот же requestId.
@@ -50,7 +51,7 @@ const replay = await spinStoredSession(
   id, requestId, 2, createBoard,
 );
 
-deepStrictEqual(replay, first);
+deepStrictEqual(replay,{ ...first, replayed:true});
 await expectVersion(id, 1);
 
 // Второе вращение: создаём новый requestId.
@@ -59,6 +60,7 @@ const second = await spinStoredSession(
 );
 
 strictEqual(second.version, 2);
+strictEqual(second.replayed, false);
 await expectVersion(id, 2);
 
 // Снова запрашиваем результат первого вращения.
@@ -67,7 +69,7 @@ const oldReplay = await spinStoredSession(
 );
 
 strictEqual(oldReplay.version, 1);
-deepStrictEqual(oldReplay, first);
+deepStrictEqual(oldReplay, { ...first, replayed: true });
 await expectVersion(id, 2);
   strictEqual((await loadStoredSession(id))?.state.balance, 96);
 

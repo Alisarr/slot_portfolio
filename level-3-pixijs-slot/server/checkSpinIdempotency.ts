@@ -33,7 +33,15 @@ try {
     spinStoredSession(id, requestId, 2, createBoard),
   ]);
 
-  deepStrictEqual(repeated, first);
+  deepStrictEqual(
+    { ...repeated, replayed: true },
+    { ...first, replayed: true},
+  );
+
+  deepStrictEqual(
+    [first.replayed, repeated.replayed].sort(),
+    [false, true],
+  );
   strictEqual(first.session.balance, 98);
   strictEqual(boardCalls, 1);
   deepStrictEqual((await loadStoredSession(id))?.state, first.session);
@@ -66,7 +74,7 @@ try {
     createBoard,
   );
 
-  deepStrictEqual(oldResponse, first);
+  deepStrictEqual(oldResponse, { ...first, replayed: true });
   deepStrictEqual((await loadStoredSession(id))?.state, second.session);
   strictEqual(boardCalls, 2);
 
@@ -105,7 +113,12 @@ try {
     createBoard,
   );
 
-  deepStrictEqual(replayedFree, lastFree);
+  strictEqual(lastFree.replayed, false);
+
+  deepStrictEqual(replayedFree, {
+    ...lastFree,
+    replayed:true,
+  });
   strictEqual(lastFree.mode, "free");
   strictEqual(lastFree.session.bonus.remainingSpins, 0);
   strictEqual(lastFree.session.bonusBet, null);

@@ -18,6 +18,9 @@ export interface StoredSpinResult extends GameSpinResults {
   readonly mode: "paid" | "free";
   readonly version: number | null;
 }
+export interface SpinRequestResult extends StoredSpinResult {
+  readonly replayed: boolean;
+}
 
 export async function spinStoredSession(
   id: string,
@@ -25,7 +28,7 @@ export async function spinStoredSession(
   totalBet: number,
   createBoard: () => Board = generateBoard,
   createMultiplier: () => number = generateWildMultiplier,
-): Promise<StoredSpinResult> {
+): Promise<SpinRequestResult> {
   if (!Number.isFinite(totalBet) || totalBet <= 0) {
     throw new Error("Bet must be positive and finite");
   }
@@ -74,8 +77,11 @@ export async function spinStoredSession(
 
       await client.query("COMMIT");
 
-      return response;
-    }
+      return {
+        ...response,
+        replayed: true,
+    };
+  }
 
     // Запрос новый — выполняем обычную игровую логику.
     const session = parseGameSession(row.state);
@@ -133,7 +139,10 @@ const response = parseStoredSpinResult({
 
     await client.query("COMMIT");
 
-    return response;
+    return {
+      ...response,
+      replayed: false,
+    };
   } catch (error) {
     try {
       await client.query("ROLLBACK");

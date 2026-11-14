@@ -5,13 +5,17 @@ import { parseGameSession } from "./parseGameSession";
 import { pool } from "./db";
 import { GameError } from "../src/shared/GameError";
 
+export interface ChestRequestResult extends StoredChestResult {
+    readonly replayed: boolean;
+}
+
 
 
 export async function chooseStoredChest(
     id: string,
     requestId: string,
     chestIndex: number,
-): Promise<StoredChestResult> {
+): Promise<ChestRequestResult> {
     if(!Number.isInteger(chestIndex) || chestIndex < 0 || chestIndex > 4) {
         throw new Error("Chest index must be an integer from 0 to 4");
     }
@@ -56,7 +60,10 @@ export async function chooseStoredChest(
 
             const response = parseStoredChestResult(saved.response);
             await client.query("COMMIT");
-            return response;
+            return{
+                ...response,
+                replayed: true,
+            };
         }
 
         const session = parseGameSession(row.state);
@@ -95,7 +102,10 @@ export async function chooseStoredChest(
 
       await client.query("COMMIT");
 
-        return response;
+        return {
+            ...response,
+            replayed: false,
+        };
     } catch (error){
         try {
             await client.query("ROLLBACK");

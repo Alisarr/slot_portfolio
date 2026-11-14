@@ -47,7 +47,13 @@ try {
       chooseStoredChest(id, requestId, chestIndex),
     ]);
 
-    deepStrictEqual(repeatedResult, chosenResult);
+    deepStrictEqual(repeatedResult.session, chosenResult.session);
+    strictEqual(repeatedResult.version, chosenResult.version);
+
+    deepStrictEqual(
+      [chosenResult.replayed, repeatedResult.replayed].sort(),
+      [false, true],
+    )
     strictEqual(chosenResult.version, 1);
 
     const chosen = chosenResult.session;
@@ -125,7 +131,10 @@ try {
       chestIndex,
     );
 
-    deepStrictEqual(oldResponse, chosenResult);
+    deepStrictEqual(oldResponse, {
+      ...chosenResult,
+    replayed: true,
+  });
     strictEqual(oldResponse.version, 1);
 
 
